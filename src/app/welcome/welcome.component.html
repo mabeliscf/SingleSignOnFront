@@ -1,21 +1,29 @@
 
 
 <div class="row">
-    <div class="col">
+    <div class=" banner col">
+       <div style="display: flex;">
+        <img class="imgBanner " src="favicon.ico">
 
+       </div>
+
+        <!--only show roles availables ex. link1 link2 to tenant1 -->
         <ul class="nav justify-content-end">
+            <div *ngFor="let rol of roles">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">{{rol.roleDescription}}</a>
+                </li>
+            </div>
             <li class="nav-item">
-            <a class="nav-link active" href="#">Active</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="#">Link 1</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="#">Link 2 </a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link disabled" href="#" id="user">{{userlogin}}</a>
+            <a class="nav-link disabled username" href="#" id="user">{{userlogin}}</a>
             </li>
         </ul>
+    </div>
+   
+</div>
+<div class="row justify-content-center">
+    <div class="col text-center">
+        <img src="../assets/welcome.jpeg" />
+
     </div>
 </div>

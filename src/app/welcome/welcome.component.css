@@ -1,0 +1,24 @@
+
+.banner{
+    display: flex;
+    background-color: rgb(238, 238, 238);
+    color: rgb(151, 148, 148);
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-decoration: none;
+    justify-content: space-between;
+}
+a{
+    color:  rgb(151, 148, 148);
+}
+.username{
+    font-size: 18px;
+    font-weight: bold;
+}
+.imgBanner{
+    background-color: rgb(238, 238, 238); 
+    width: 40px;
+    margin: 0px;
+    padding: 0px;
+    
+    
+}

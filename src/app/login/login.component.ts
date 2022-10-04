@@ -20,14 +20,18 @@ export class LoginComponent implements OnInit {
 
 
   login(){
+
+    //validate login 
     this.router.navigateByUrl("welcome", {skipLocationChange:false});
     this.service.sharedAccess.username="test1";
   }
   ShowGoogleLogin(){
+    //show login page of company selected
     //once created give access to welcome page 
     
   }
   CreateAccount(){
+    //call create form 
     this.router.navigateByUrl("create", {skipLocationChange:false});
   }
 }
