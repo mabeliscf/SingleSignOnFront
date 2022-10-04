@@ -13,6 +13,11 @@ url : string = environment.apiURl;
 
   constructor(private http: HttpClient ) { }
 
+  sharedAccess : any = {
+    username: "raemil",
+    token: "token"
+  } ;
+
   private LoginListener = new Subject<object>();
   login$ = this.LoginListener.asObservable();
 
