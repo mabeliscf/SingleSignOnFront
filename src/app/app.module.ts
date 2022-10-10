@@ -13,7 +13,7 @@ import config from './app.config';
 import { RegisterUserComponent } from './register-user/register-user.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const oktaAuth = new OktaAuth(config.oidc);
 
@@ -31,7 +31,9 @@ const oktaAuth = new OktaAuth(config.oidc);
     AppRoutingModule,
     HttpClientModule,
     NgbModule,
-    OktaAuthModule 
+    OktaAuthModule ,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
     { provide: OKTA_CONFIG, useValue: {oktaAuth  } },

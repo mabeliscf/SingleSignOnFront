@@ -1,18 +1,25 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { HttpServiceService } from '../Service/http-service.service';
 import { Router } from '@angular/router';
 import { OktaAuthStateService, OKTA_AUTH } from '@okta/okta-angular';
 import OktaAuth, { AuthState } from '@okta/okta-auth-js';
-import {  Observable } from 'rxjs';
+import {  Observable, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { login } from '../Models/login';
+
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit , OnDestroy{
   public isAuthenticated$!: Observable<boolean>;
+  
+
+  login1 : login={userName:"", password:""};
+
+  logindata ? : Subscription;
 
   
   constructor(private service : HttpServiceService, private _router: Router, 
@@ -29,6 +36,7 @@ export class LoginComponent implements OnInit {
       filter((s: AuthState) => !!s),
       map((s: AuthState) => s.isAuthenticated ?? false)
     );
+
   }
 
   public async signinOkta() : Promise<void> {
@@ -37,27 +45,34 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  public async signOut(): Promise<void> {
+  public async signOutOkta(): Promise<void> {
     await this._oktaAuth.signOut();
   }
 
-  getlogin(): void{
-    //=  {userName:"rcorniel"; password:"strongpassword";}   ;
-    let login1 : login={userName:"rcorniel", password:"strongpassword"};
-// login1.userName="rcorniel";
-// login1.password="strongpassword";
-    this.service.loginlocal(login1).subscribe(data => console.log(data));
-    //validate login 
-    // this._router.navigateByUrl("welcome", {skipLocationChange:false});
-    // this.service.sharedAccess.username="test1";
-  }
-  ShowGoogleLogin(){
-    //show login page of company selected
-    //once created give access to welcome page 
+   getlogin(){
+  
+    this.service.loginlocal(this.login1);
+    this.logindata =  this.service.login$.subscribe(a=> {console.log(a) ; 
+      if(a!= undefined){
+      //validate login 
+      this._router.navigate(['/welcome']);
+       
+      }
+
+    });
     
   }
+
   CreateAccount(){
     //call create form 
     this._router.navigateByUrl("create", {skipLocationChange:false});
+  }
+
+  ngOnDestroy(): void{
+    if(this.logindata){
+      this.logindata.unsubscribe();
+
+    }
+
   }
 }

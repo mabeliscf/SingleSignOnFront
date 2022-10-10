@@ -12,9 +12,9 @@ const routes: Routes = [
 
 {path: 'login', component:LoginComponent},
 {path:'create', component:CreateAccountComponent},
-{path:'welcome', component:WelcomeComponent , canActivate: [OktaAuthGuard]},
+{path:'welcome', component:WelcomeComponent },
 { path: 'login/callback', component: OktaCallbackComponent },
-{ path: 'register', component: RegisterUserComponent, canActivate: [OktaAuthGuard] },
+{ path: 'register', component: RegisterUserComponent},
 
   //default path
 {path:"", redirectTo:"login", pathMatch: "full"},

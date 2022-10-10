@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
+import { observable, Observable, of, Subject } from 'rxjs';
 import { Database } from '../Models/Database';
 import { catchError } from 'rxjs/operators';
 import { UserLogged } from '../Models/UserLogged';
@@ -25,6 +25,9 @@ url : string = environment.apiURl;
   private LoginListener = new Subject<object>();
   login$ = this.LoginListener.asObservable();
 
+  private tokenListener = new Subject<String>();
+  token$ = this.tokenListener.asObservable();
+ 
 
 //validate login 
 GetLogin(){
@@ -34,11 +37,15 @@ GetLogin(){
   console.log(data);
   });
 }
-loginlocal(login: login): Observable<UserLogged> {
-  return this.http.post<UserLogged>(this.url  + "user/authenticate" , login)
-    .pipe(
-     // catchError()
-    );
+ loginlocal(login: login) {
+   this.http.post<UserLogged>(this.url  + "user/authenticate" , login)
+   .subscribe(a=>  {
+    if(a!=undefined){
+      console.log(a.token); 
+      this.tokenListener.next(a.token); this.LoginListener.next(a);
+      
+    }
+    });
 }
 
 
