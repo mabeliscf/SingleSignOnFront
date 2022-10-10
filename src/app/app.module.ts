@@ -14,6 +14,9 @@ import { RegisterUserComponent } from './register-user/register-user.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DatabaseComponent } from './database/database.component';
+import { RolesComponent } from './roles/roles.component';
+import { UsersComponent } from './users/users.component';
 
 const oktaAuth = new OktaAuth(config.oidc);
 
@@ -24,7 +27,10 @@ const oktaAuth = new OktaAuth(config.oidc);
     LoginComponent,
     CreateAccountComponent,
     WelcomeComponent,
-    RegisterUserComponent
+    RegisterUserComponent,
+    DatabaseComponent,
+    RolesComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,

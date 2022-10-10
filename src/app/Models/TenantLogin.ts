@@ -2,8 +2,8 @@
 export interface TenantLogin{
     idTenantLogin: number,
     idTenant: number,
-    username : string ,
     passwordEncrypted : string ,
-    loginType : string ,
-    token : string
+    loginType : number ,
+    administrator : boolean,
+    tenantFather : number
 }

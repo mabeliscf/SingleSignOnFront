@@ -3,7 +3,8 @@ export interface Tenant{
     idTenant : number,
     fullName : String,
     email : String ,
-    phone : string
+    phone : string,
+    username: string
 
 }
 

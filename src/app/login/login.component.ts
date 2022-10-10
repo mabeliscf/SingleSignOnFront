@@ -5,7 +5,7 @@ import { OktaAuthStateService, OKTA_AUTH } from '@okta/okta-angular';
 import OktaAuth, { AuthState } from '@okta/okta-auth-js';
 import {  Observable, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { login } from '../Models/login';
+import {  LoginDTO } from '../Models/request/LoginDTO';
 
 
 @Component({
@@ -13,11 +13,11 @@ import { login } from '../Models/login';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit , OnDestroy{
+export class LoginComponent implements OnInit {
   public isAuthenticated$!: Observable<boolean>;
   
 
-  login1 : login={userName:"", password:""};
+  login1 : LoginDTO={userName:"", password:""};
 
   logindata ? : Subscription;
 
@@ -31,6 +31,7 @@ export class LoginComponent implements OnInit , OnDestroy{
   }
 
   ngOnInit(): void {
+    console.log(window.location.origin);
 
     this.isAuthenticated$ = this._oktaStateService.authState$.pipe(
       filter((s: AuthState) => !!s),
@@ -46,13 +47,13 @@ export class LoginComponent implements OnInit , OnDestroy{
   }
 
   public async signOutOkta(): Promise<void> {
-    await this._oktaAuth.signOut();
+    await this._oktaAuth.signOut().then(_ => this._router.navigate(['/login']));
   }
 
    getlogin(){
   
     this.service.loginlocal(this.login1);
-    this.logindata =  this.service.login$.subscribe(a=> {console.log(a) ; 
+      this.service.login$.subscribe(a=> {console.log(a) ; 
       if(a!= undefined){
       //validate login 
       this._router.navigate(['/welcome']);
@@ -68,11 +69,11 @@ export class LoginComponent implements OnInit , OnDestroy{
     this._router.navigateByUrl("create", {skipLocationChange:false});
   }
 
-  ngOnDestroy(): void{
-    if(this.logindata){
-      this.logindata.unsubscribe();
+  // ngOnDestroy(): void{
+  //   if(this.logindata){
+  //     this.logindata.unsubscribe();
 
-    }
+  //   }
 
-  }
+  // }
 }

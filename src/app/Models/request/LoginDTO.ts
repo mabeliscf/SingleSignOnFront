@@ -1,4 +1,4 @@
-export interface login {
+export interface LoginDTO {
     userName :string,
        password :string
 }

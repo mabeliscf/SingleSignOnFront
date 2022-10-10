@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Roles } from '../Models/Roles';
+import { Roles } from '../Models/response/Roles';
 import { HttpServiceService } from '../Service/http-service.service';
 import { OktaAuthStateService } from '@okta/okta-angular';
 import {  Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { AuthState } from '@okta/okta-auth-js';
-import { Database } from '../Models/Database';
+import { Database } from '../Models/response/Database';
+import { TenantInfo } from '../Models/response/TenantInfo';
 
 @Component({
   selector: 'app-welcome',
@@ -22,8 +23,7 @@ export class WelcomeComponent implements OnInit {
 
    public roles: Roles[] = [];
 
-   database : Database[] | undefined;
-
+   tenantinfo :TenantInfo[]=[];
   constructor(private service : HttpServiceService,private _oktaAuthStateService: OktaAuthStateService) {
 
    }
@@ -43,10 +43,11 @@ export class WelcomeComponent implements OnInit {
     this.roles.push({ idRole: 3, roleDescription: "ROL 3",  roleFather: 0 });
 
     
-    this.service.getAllDB().subscribe((data: Database[]) => {console.log(data); this.database = {
-      ...data
+ //si es administrador 
+ this.service.getAllTenants().subscribe((data: TenantInfo[]) => {console.log(data); this.tenantinfo = {
+  ...data
 
-    }});
+}});
 
 
   }
