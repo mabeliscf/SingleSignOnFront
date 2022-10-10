@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Roles } from '../Models/Roles';
 import { HttpServiceService } from '../Service/http-service.service';
+import { OktaAuthStateService } from '@okta/okta-angular';
+import {  Observable } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
+import { AuthState } from '@okta/okta-auth-js';
+import { Database } from '../Models/Database';
 
 @Component({
   selector: 'app-welcome',
@@ -9,15 +14,26 @@ import { HttpServiceService } from '../Service/http-service.service';
 })
 export class WelcomeComponent implements OnInit {
 
+
+  public name$!: Observable<string>;
+
+
    public userlogin :string ="";
 
    public roles: Roles[] = [];
 
-  constructor(private service : HttpServiceService) {
+   database : Database[] | undefined;
+
+  constructor(private service : HttpServiceService,private _oktaAuthStateService: OktaAuthStateService) {
 
    }
 
   ngOnInit(): void {
+    this.name$ = this._oktaAuthStateService.authState$.pipe(
+      filter((authState: AuthState) => !!authState && !!authState.isAuthenticated),
+      map((authState: AuthState) => authState.idToken?.claims.name ?? '')
+    );
+
     //show login user name
     this.userlogin = this.service.sharedAccess.username;
 
@@ -25,6 +41,13 @@ export class WelcomeComponent implements OnInit {
     this.roles.push({ idRole: 1, roleDescription: "ROL 1",  roleFather: 0 });
     this.roles.push({ idRole: 2, roleDescription: "ROL 2",  roleFather: 0 });
     this.roles.push({ idRole: 3, roleDescription: "ROL 3",  roleFather: 0 });
+
+    
+    this.service.getAllDB().subscribe((data: Database[]) => {console.log(data); this.database = {
+      ...data
+
+    }});
+
 
   }
 

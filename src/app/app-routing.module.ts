@@ -3,14 +3,28 @@ import { RouterModule, Routes } from '@angular/router';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { OktaAuthGuard, OktaCallbackComponent } from '@okta/okta-angular';
+import { RegisterUserComponent } from './register-user/register-user.component';
+
+
 
 const routes: Routes = [
-  {path: 'login', component:LoginComponent},
+
+{path: 'login', component:LoginComponent},
 {path:'create', component:CreateAccountComponent},
-{path:'welcome', component:WelcomeComponent},
+{path:'welcome', component:WelcomeComponent , canActivate: [OktaAuthGuard]},
+{ path: 'login/callback', component: OktaCallbackComponent },
+{ path: 'register', component: RegisterUserComponent, canActivate: [OktaAuthGuard] },
 
   //default path
-  {path:"", redirectTo:"login", pathMatch: "full"}
+{path:"", redirectTo:"login", pathMatch: "full"},
+
+//redirect to protected path
+{
+  path: 'protected',
+  loadChildren: () => import('./protected/protected.module').then(m => m.ProtectedModule),
+  canLoad: [OktaAuthGuard]
+},
 
 ];
 

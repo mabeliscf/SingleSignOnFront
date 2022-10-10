@@ -1,45 +1,41 @@
 <div class="row d-flex justify-content-center">
     
-        <div class="col-md-6">
-            <div class="card" >
-               
-                <div class="card-body">
-                    <h5 class="card-title text-center">Login</h5>
-                    <form>
-                        <div class="form-group">
-                          <label for="username">Username</label>
-                          <input type="text" class="form-control" id="username"  placeholder="Enter Username">
-                        </div>
-                        <div class="form-group">
-                          <label for="password">Password</label>
-                          <input type="password" class="form-control" id="password" placeholder="Enter Password">
-                        </div>
-                        <!-- <div class="form-check ">
-                          <input type="checkbox" class="form-check-input" id="rembember">
-                          <label class="form-check-label" for="rembember">Remember me</label>
-                        </div> -->
-                        <div class="text-right">
-                            <button type="submit" (click)="login()" class="btn btn-primary ">Log in</button>
-                        </div>
-                      </form>
-                      <!--divider -->
-                      <div class="dropdown-divider"></div>
+  <div class="col-md-6">
+        <div class="card" >
+          <div class="card-body">
+                <h5 class="card-title text-center">Login</h5>
+                <form>
+                    <div class="form-group">
+                      <label for="username">Username</label>
+                      <input type="text" class="form-control" id="username"  placeholder="Enter Username">
+                    </div>
+                    <div class="form-group">
+                      <label for="password">Password</label>
+                      <input type="password" class="form-control" id="password" placeholder="Enter Password">
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" (click)="getlogin()" class="btn btn-primary ">Log in</button>
+                    </div>
+                  </form>
+                  <!--divider -->
+                  <div class="dropdown-divider"></div>
 
-                    <p class="card-text text-center">Or Log in with:</p>
-                
-                    <div class="text-center">
-                       <a href="https://via.placeholder.com/150"> <img  (click)="ShowGoogleLogin()" src="https://via.placeholder.com/150" alt="google" class="imglogin rounded">  </a> 
-                       <a href="https://via.placeholder.com/150"><img  (click)="ShowGoogleLogin()" src="https://via.placeholder.com/150" alt="google" class="imglogin rounded"> </a> 
-                        <a href="https://via.placeholder.com/150"><img  (click)="ShowGoogleLogin()" src="https://via.placeholder.com/150" alt="google" class="imglogin rounded"> </a> 
-                    </div>
-                    <div class="text-left">
-                        <p>Don't have an account <a   class="links" (click)="CreateAccount()" > Create one here!</a></p>
-                    </div>
+                <p class="card-text text-center">Or Log in with:</p>
+            
+                <div class="text-center">
+                  <ng-container *ngIf="(isAuthenticated$ | async) === false; else signout">
+                    <a > <img  (click)="signinOkta()"   src="https://via.placeholder.com/150" alt="Okta" class="imglogin rounded">  </a> 
+
+                  </ng-container>
+                  <ng-template #signout>
+                    <button (click)="signOut()">Sign out</button>
+                  </ng-template>
+                  </div>
+                <div class="text-left">
+                    <p>Don't have an account <a   class="links" (click)="CreateAccount()" > Create one here!</a></p>
                 </div>
-               
-              </div>
+          </div>
+           
         </div>
-   
-   
-   
+  </div>
 </div>
