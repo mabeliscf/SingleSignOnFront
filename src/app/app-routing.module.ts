@@ -11,8 +11,8 @@ import { AuthGuardService as AuthGuard } from './Service/auth-guard.service';
 const routes: Routes = [
 
 {path: 'login', component:LoginComponent},
-{path:'create', component:CreateAccountComponent , canActivate: [OktaAuthGuard] },
-{path:'welcome', component:WelcomeComponent, canActivate: [OktaAuthGuard] },
+{path:'create', component:CreateAccountComponent  },
+{path:'welcome', component:WelcomeComponent }, // canActivate: [AuthGuard]
 { path: 'login/callback', component: OktaCallbackComponent  },
 { path: 'register', component: RegisterUserComponent},
 
@@ -22,8 +22,8 @@ const routes: Routes = [
 //redirect to protected path
 {
   path: 'protected',
-  loadChildren: () => import('./protected/protected.module').then(m => m.ProtectedModule),
-  canLoad: [OktaAuthGuard]
+  loadChildren: () => import('./protected/protected.module').then(m => m.ProtectedModule)//,
+  ///canLoad: [AuthGuard]
 },
 
 ];

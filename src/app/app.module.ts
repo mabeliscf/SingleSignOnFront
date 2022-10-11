@@ -17,6 +17,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatabaseComponent } from './database/database.component';
 import { RolesComponent } from './roles/roles.component';
 import { UsersComponent } from './users/users.component';
+import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 
 const oktaAuth = new OktaAuth(config.oidc);
 
@@ -43,7 +44,9 @@ const oktaAuth = new OktaAuth(config.oidc);
   ],
   providers: [
     { provide: OKTA_CONFIG, useValue: {oktaAuth  } },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+    JwtHelperService
   ],
   bootstrap: [AppComponent]
 })

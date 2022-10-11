@@ -15,6 +15,7 @@ import { GlobalResponse } from '../Models/response/GlobalResponse';
 import { UsersInfo } from '../Models/response/UsersInfo';
 import { TenantInfo } from '../Models/response/TenantInfo';
 import { updateUserDTO } from '../Models/request/UpdateUserDTO';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,14 @@ export class HttpServiceService {
 //get enviroment url 
 url : string = environment.apiURl;
 
-  constructor(private http: HttpClient ) { }
+  constructor(private http: HttpClient , private auth : AuthService) { }
 
   sharedAccess : any = {
     username: "raemil",
     token: "token"
   } ;
 
-  private LoginListener = new Subject<object>();
+  private LoginListener = new Subject<UserLogged>();
   login$ = this.LoginListener.asObservable();
 
   private tokenListener = new Subject<string>();
@@ -52,9 +53,9 @@ loginlocal(login: LoginDTO) {
    this.http.post<UserLogged>(this.url  + "user/authenticate" , login)
    .subscribe(a=>  {
     if(a!=undefined){
-      console.log(a.token); 
+      console.log("loginlocal--> "+a.token); 
       this.tokenListener.next(a.token.toString()); this.LoginListener.next(a);
-      
+      this.auth.login(a);
     }
     });
 }
@@ -128,6 +129,19 @@ getAllTenants() {
 updateUser(update :  updateUserDTO) : Observable<GlobalResponse>{
   return this.http.post<GlobalResponse>(this.url + "User/UpdateUsers", update)
     .pipe();
+}
+getUserToken(userID: number){
+  const sendurl = `${this.url  + "User/validateUser?id="}${userID}`;
+
+  this.http.get<UserLogged>( sendurl)
+  .subscribe(a=>  {
+   if(a!=undefined){
+     console.log( "validate user token -->" +a.token); 
+     this.tokenListener.next(a.token.toString()); this.LoginListener.next(a);
+     this.auth.login(a);
+   }
+   });
+   return this.LoginListener.pipe();
 }
 
 }

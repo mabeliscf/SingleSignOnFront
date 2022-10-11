@@ -3,4 +3,5 @@ export interface UserLogged{
     username: String,
     fullName : String,
     token : String,
+    expiresIn : number ,
 }

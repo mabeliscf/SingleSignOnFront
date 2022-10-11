@@ -6,6 +6,7 @@ import OktaAuth, { AuthState } from '@okta/okta-auth-js';
 import {  Observable, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import {  LoginDTO } from '../Models/request/LoginDTO';
+import { UserLogged } from '../Models/response/UserLogged';
 
 
 @Component({
@@ -31,7 +32,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(window.location.origin);
 
     this.isAuthenticated$ = this._oktaStateService.authState$.pipe(
       filter((s: AuthState) => !!s),
@@ -42,7 +42,8 @@ export class LoginComponent implements OnInit {
 
   public async signinOkta() : Promise<void> {
     await this._oktaAuth.signInWithRedirect().then(
-      _ => this._router.navigate(['/welcome'])
+       _ => this._router.navigate(['/welcome'])
+   
     );
   }
 

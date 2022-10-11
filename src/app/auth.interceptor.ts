@@ -26,20 +26,17 @@ export class AuthInterceptor implements HttpInterceptor {
     const allowedOrigins = ['http://localhost'];
     //allow everything from same origin  it can be fix to allow a specific oring
     if (!!allowedOrigins.find(origin => request.url.includes(origin.split(":")[0]))) {
-      //use eigther okta token  or jwt toke to navigate
-      let jwttoken : String ="";
-      this.service.token$.subscribe(a=> jwttoken=a);
-      const authToken = this._oktaAuth.getAccessToken() ==undefined ? jwttoken  :  this._oktaAuth.getAccessToken();
+      //use jwt token to navigate
+      const jwttoken = localStorage.getItem("id_token");
+     
+      const authToken = jwttoken==""?  this._oktaAuth.getAccessToken() :   jwttoken  ;
+
       //assign token if we have one
       if(authToken!=undefined){
         req = request.clone({ setHeaders: { 'Authorization': `Bearer ${authToken}` } });
 
       }
     }
-    console.log(req);
-    console.log("addAuthHeaderToAllowedOrigins");
-
-
     return req;
   }
 

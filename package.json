@@ -24,6 +24,7 @@
     "@okta/okta-angular": "6.0",
     "@okta/okta-auth-js": "7.0",
     "bootstrap": "^4.5.0",
+    "moment": "^2.29.4",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
