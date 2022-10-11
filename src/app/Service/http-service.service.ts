@@ -16,6 +16,7 @@ import { UsersInfo } from '../Models/response/UsersInfo';
 import { TenantInfo } from '../Models/response/TenantInfo';
 import { updateUserDTO } from '../Models/request/UpdateUserDTO';
 import { AuthService } from './auth.service';
+import { OktaUserinfo } from '../Models/response/OktaUserinfo';
 
 @Injectable({
   providedIn: 'root'
@@ -24,48 +25,31 @@ export class HttpServiceService {
 
 //get enviroment url 
 url : string = environment.apiURl;
+oktaURL : string = environment.oktaBaseURL;
 
   constructor(private http: HttpClient , private auth : AuthService) { }
 
-  sharedAccess : any = {
-    username: "raemil",
-    token: "token"
-  } ;
-
-  private LoginListener = new Subject<UserLogged>();
-  login$ = this.LoginListener.asObservable();
-
-  private tokenListener = new Subject<string>();
-  token$ = this.tokenListener.asObservable();
- 
-
-// //validate login 
-// GetLogin(){
-//   this.http.post(this.url + "user/authenticate" , {responseType: "json"})
-//   .subscribe(data=> {
-//   this.LoginListener.next(data);
-//   console.log(data);
-//   });
-// }
-
-
+  //---------------------------------LOGIN info ----------------
+//login local db
 loginlocal(login: LoginDTO) {
-   this.http.post<UserLogged>(this.url  + "user/authenticate" , login)
-   .subscribe(a=>  {
-    if(a!=undefined){
-      console.log("loginlocal--> "+a.token); 
-      this.tokenListener.next(a.token.toString()); this.LoginListener.next(a);
-      this.auth.login(a);
-    }
-    });
+   return this.http.post<UserLogged>(this.url  + "user/authenticate" , login).pipe();
+  
 }
+//login sso
+getUserToken(userID: number){
+  const sendurl = `${this.url  + "User/validateUser?id="}${userID}`;
+  return this.http.get<UserLogged>( sendurl).pipe();
+  
+}
+
+
 
 //------------------------------------DATABASE-----------------
 getAllDB (){
   return this.http.get<Database[]>(this.url + "Database/listDB");
 }
 getDBbyID (id:Number){
-  const sendurl = `${this.url + "Database/getDB"}/${id}`;
+  const sendurl = `${this.url + "Database/getDB?id="}${id}`;
   return this.http.get<Database>(sendurl);
 }
 createDB(database :  DatabaseDTO) : Observable<boolean>{
@@ -86,7 +70,7 @@ getAllRole (){
   return this.http.get<Roles[]>(this.url + "Roles/listRole");
 }
 getRolebyID (id:Number){
-  const sendurl = `${this.url + "Roles/getRole"}/${id}`;
+  const sendurl = `${this.url + "Roles/getRole?id="}${id}`;
   return this.http.get<Roles>(sendurl);
 }
 createRole(role :  RoleDTO) : Observable<boolean>{
@@ -113,11 +97,11 @@ createUsers(register :  RegisterUserDTO) : Observable<GlobalResponse>{
     .pipe();
 }
 getUserbyID(userID :  Number) {
-  const sendurl = `${this.url + "User/UserID"}/${userID}`;
+  const sendurl = `${this.url + "User/UserID?id="}${userID}`;
   return this.http.get<UsersInfo>(sendurl);
 }
 getUsersbyTenant(userID :  Number) {
-  const sendurl = `${this.url + "User/TenantUsers"}/${userID}`;
+  const sendurl = `${this.url + "User/TenantUsers?id="}${userID}`;
   return this.http.get<UsersInfo[]>(sendurl);
 }
 
@@ -130,19 +114,14 @@ updateUser(update :  updateUserDTO) : Observable<GlobalResponse>{
   return this.http.post<GlobalResponse>(this.url + "User/UpdateUsers", update)
     .pipe();
 }
-getUserToken(userID: number){
-  const sendurl = `${this.url  + "User/validateUser?id="}${userID}`;
 
-  this.http.get<UserLogged>( sendurl)
-  .subscribe(a=>  {
-   if(a!=undefined){
-     console.log( "validate user token -->" +a.token); 
-     this.tokenListener.next(a.token.toString()); this.LoginListener.next(a);
-     this.auth.login(a);
-   }
-   });
-   return this.LoginListener.pipe();
+//-------------------------------------------------okta-user info-----------
+//get user logeed in info
+getOktaUserInfo() {
+  return this.http.get<OktaUserinfo>(this.oktaURL + "userinfo");
 }
+
+
 
 }
 

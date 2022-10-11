@@ -43,7 +43,6 @@ export class CreateAccountComponent implements OnInit {
 
     //once created give access to welcome page 
     this.router.navigateByUrl("welcome", {skipLocationChange:false});
-    this.service.sharedAccess.username="test1";
   }
 
 }

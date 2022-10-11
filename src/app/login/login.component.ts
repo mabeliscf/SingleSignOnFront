@@ -7,6 +7,7 @@ import {  Observable, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import {  LoginDTO } from '../Models/request/LoginDTO';
 import { UserLogged } from '../Models/response/UserLogged';
+import { AuthService } from '../Service/auth.service';
 
 
 @Component({
@@ -15,23 +16,26 @@ import { UserLogged } from '../Models/response/UserLogged';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+
+  isLoggedIn$: Observable<boolean> | undefined;
   public isAuthenticated$!: Observable<boolean>;
-  
 
   login1 : LoginDTO={userName:"", password:""};
+  user : UserLogged={username: '', fullName: "", expiresIn:0, token:"", id:0} ;
 
   logindata ? : Subscription;
 
   
   constructor(private service : HttpServiceService, private _router: Router, 
     private _oktaStateService: OktaAuthStateService, 
-    @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth) { 
-
-    this.service.login$.subscribe(a=> console.log(a));
+    @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth, private auth : AuthService) { 
 
   }
 
   ngOnInit(): void {
+   
+    this.user= {username: 'dd', fullName: "ddd", expiresIn:11, token:"dd", id:1 };
+    //this.auth.login(this.user);
 
     this.isAuthenticated$ = this._oktaStateService.authState$.pipe(
       filter((s: AuthState) => !!s),
@@ -41,33 +45,30 @@ export class LoginComponent implements OnInit {
   }
 
   public async signinOkta() : Promise<void> {
-    await this._oktaAuth.signInWithRedirect().then(
-       _ => this._router.navigate(['/welcome'])
-   
-    );
-  }
-
-  public async signOutOkta(): Promise<void> {
-    await this._oktaAuth.signOut().then(_ => this._router.navigate(['/login']));
-  }
-
-   getlogin(){
-  
-    this.service.loginlocal(this.login1);
-      this.service.login$.subscribe(a=> {console.log(a) ; 
-      if(a!= undefined){
-      //validate login 
-      this._router.navigate(['/welcome']);
-       
-      }
-
-    });
     
+    await this._oktaAuth.signInWithRedirect();
+  }
+
+
+  public  getlogin(){
+     this.service.loginlocal(this.login1)
+      .subscribe(a => {
+        if (a != undefined && a != null) {
+          console.log("loginlocal -->" + a.token);
+          //save login and token 
+          this.auth.login(a);
+          this._router.navigate(['/welcome']);
+        }
+      });
   }
 
   CreateAccount(){
     //call create form 
     this._router.navigateByUrl("create", {skipLocationChange:false});
+  }
+
+  public async signOutOkta(): Promise<void> {
+    await this._oktaAuth.signOut().then(_ => this._router.navigate(['/login']));
   }
 
   // ngOnDestroy(): void{

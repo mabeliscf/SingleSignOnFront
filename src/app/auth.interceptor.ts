@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { OKTA_AUTH } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
 import { HttpServiceService } from './Service/http-service.service';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable()
@@ -24,6 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private addAuthHeaderToAllowedOrigins(request: HttpRequest<unknown>): HttpRequest<unknown> {
     let req = request;
     const allowedOrigins = ['http://localhost'];
+    const allowOktaorigin= environment.oktaBaseURL;
     //allow everything from same origin  it can be fix to allow a specific oring
     if (!!allowedOrigins.find(origin => request.url.includes(origin.split(":")[0]))) {
       //use jwt token to navigate
@@ -37,6 +39,14 @@ export class AuthInterceptor implements HttpInterceptor {
 
       }
     }
+      //add okta token to request
+    if(request.url.includes(allowOktaorigin)){
+      const oktaToken =this._oktaAuth.getAccessToken();
+      req = request.clone({ setHeaders: { 'Authorization': `Bearer ${oktaToken}` } });
+      console.log("okta login applied --> " + oktaToken);
+
+    }
+
     return req;
   }
 

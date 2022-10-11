@@ -18,6 +18,10 @@ import { DatabaseComponent } from './database/database.component';
 import { RolesComponent } from './roles/roles.component';
 import { UsersComponent } from './users/users.component';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { NavbarComponent } from './navbar/navbar.component';
+import { HomeLayoutComponent } from './layouts/home-layout.component';
+import { LoginLayoutComponent } from './layouts/login-layout.component';
+
 
 const oktaAuth = new OktaAuth(config.oidc);
 
@@ -31,7 +35,10 @@ const oktaAuth = new OktaAuth(config.oidc);
     RegisterUserComponent,
     DatabaseComponent,
     RolesComponent,
-    UsersComponent
+    UsersComponent,
+    NavbarComponent,
+    HomeLayoutComponent,
+    LoginLayoutComponent,
   ],
   imports: [
     BrowserModule,
