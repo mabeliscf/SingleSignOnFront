@@ -1,34 +1,82 @@
 <div class="row d-flex justify-content-center">
     
     <div class="col-md-6">
-        <div class="card" >
+
+      
+        <ngb-alert *ngIf="isCreated"  >Account Created!  Please  <a style="color: blue ;" href="/login" >Log in</a></ngb-alert>
+        <ngb-alert *ngIf="isError"  >Error Creating Account</ngb-alert>
+      
+
+        <div class="card" *ngIf="!isCreated"  >
            
             <div class="card-body">
                 <h5 class="card-title text-center">Create User</h5>
                 <form [formGroup]="CreateAccountForm" (ngSubmit)="CreateUser()">
                     <div class="form-group">
-                      <label for="username">Username</label>
-                      <input type="text" class="form-control" id="username"  placeholder="Enter Username" formControlName="username">
+                      <label for="name">First Name </label>
+                      <input type="text" class="form-control" id="name"  placeholder="Enter First Name " formControlName="name">
+                      <div  *ngIf="name.invalid &&  (name.dirty || name.touched)   "  class="form-text text-danger"  >
+                        <div *ngIf="name.errors?.['required']"> Field is required </div>
+                    </div>
                     </div>
                     <div class="form-group">
-                        <label for="fullname">Full Name</label>
-                        <input type="text" class="form-control" id="fullname"  placeholder="Enter Full Name" formControlName="fullname">
+                        <label for="lastname">Full Name</label>
+                        <input type="text" class="form-control" id="lastname"  placeholder="Enter lastname" formControlName="lastname">
+                        <div  *ngIf="lastname.invalid &&  (lastname.dirty || lastname.touched)   "  class="form-text text-danger"  >
+                          <div *ngIf="lastname.errors?.['required']"> Field is required </div>
+                      </div>
+                      
                       </div>
                       <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" class="form-control" id="email"  placeholder="Enter Email" formControlName="email">
+                        <div  *ngIf="email.invalid &&  (email.dirty || email.touched)   "  class="form-text text-danger"  >
+                          <div *ngIf="email.errors?.['required']"> Field is required </div>
+                          <div *ngIf="email.errors?.['pattern']">format invalid </div>
+                      </div>
                       </div>
                       <div class="form-group">
                         <label for="phone">Phone number</label>
-                        <input type="text" class="form-control" id="phone"  placeholder="Enter Phone Number" formControlName="phone">
+                        <input type="" class="form-control" id="phone"  placeholder="Enter Phone Number" formControlName="phone">
+                        <div  *ngIf="phone.invalid &&  (phone.dirty || phone.touched)   "  class="form-text text-danger"  >
+                          <div *ngIf="phone.errors?.['required']"> Field is required </div>
+                          <div *ngIf="phone.errors?.['pattern']">Only Numbers </div>
+                          <div *ngIf="phone.errors?.['minlength']"> Lenght must be 10</div>
+                          <div *ngIf="phone.errors?.['maxlength']"> Lenght must be 10</div>
+
+                          
+                      </div>
                       </div>
                     <div class="form-group">
                       <label for="password">Password</label>
                       <input type="password" class="form-control" id="password" placeholder="Enter Password" formControlName="password">
+                        <div  *ngIf="password.invalid &&  (password.dirty || password.touched)   "  class="form-text text-danger"  >
+                            <div *ngIf="password.errors?.['required']">
+                              Field is required
+                            </div>
+                            <div *ngIf="password.errors?.['pattern']">
+                              Password must contain at least one number, one uppercase and a
+                              lowercase letter and at least 8 characters<br />Password cannot
+                              contain whitespace
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="password2">Repeat Password</label>
                         <input type="password" class="form-control" id="password2" placeholder="Enter Password again" formControlName="passwordRepeat">
+                        <div  *ngIf="passwordRepeat.invalid &&  (passwordRepeat.dirty || passwordRepeat.touched) " class="form-text text-danger" >
+                          <div *ngIf="passwordRepeat.errors?.['required']">
+                            Field is required
+                          </div>
+                          <div *ngIf="passwordRepeat.errors?.['pattern']">
+                            Password must contain at least one number, one uppercase and a
+                            lowercase letter and at least 8 characters<br />Password cannot
+                            contain whitespace
+                          </div>
+                          <div *ngIf="passwordRepeat.errors?.['confirmedValidator']">
+                            Passwords did not match
+                          </div>
+                        </div>
                     </div>
                     <!-- <div class="form-group">
                         <label for="exampleFormControlSelect2">Example multiple select</label>

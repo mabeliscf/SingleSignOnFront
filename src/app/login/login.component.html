@@ -17,6 +17,8 @@
                         <button type="submit" (click)="getlogin()" class="btn btn-primary ">Log in</button>
                     </div>
                   </form>
+                  <ngb-alert style="margin-top: 10px;" *ngIf="isError"  >{{ErrorLogin}}</ngb-alert>
+
                   <!--divider -->
                   <div class="dropdown-divider"></div>
 
@@ -31,7 +33,7 @@
                     <button (click)="signOutOkta()">Sign out</button>
                   </ng-template>
                   </div>
-                <div class="text-left">
+                <div class="text-left" *ngIf="showCreateAccount">
                     <p>Don't have an account <a   class="links" (click)="CreateAccount()" > Create one here!</a></p>
                 </div>
           </div>

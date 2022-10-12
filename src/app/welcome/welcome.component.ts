@@ -8,7 +8,6 @@ import OktaAuth, { AuthState } from '@okta/okta-auth-js';
 import { TenantInfo } from '../Models/response/TenantInfo';
 import { AuthService } from '../Service/auth.service';
 import { Router } from '@angular/router';
-import { OktaUserinfo } from '../Models/response/OktaUserinfo';
 
 @Component({
   selector: 'app-welcome',

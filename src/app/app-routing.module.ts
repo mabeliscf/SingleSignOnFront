@@ -5,9 +5,8 @@ import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import {  OktaAuthGuard, OktaCallbackComponent } from '@okta/okta-angular';
 import { RegisterUserComponent } from './register-user/register-user.component';
-import { AuthGuardService as AuthGuard } from './Service/auth-guard.service';
 import { HomeLayoutComponent } from './layouts/home-layout.component';
-import { LoginLayoutComponent } from './layouts/login-layout.component';
+
 
 
 const routes: Routes = [

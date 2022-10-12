@@ -115,6 +115,11 @@ updateUser(update :  updateUserDTO) : Observable<GlobalResponse>{
     .pipe();
 }
 
+isAdminCreated(){
+  //TODO: create method for determine if an admin exist 
+  return this.http.get<boolean>(this.url + "User/AdminExist");
+}
+
 //-------------------------------------------------okta-user info-----------
 //get user logeed in info
 getOktaUserInfo() {

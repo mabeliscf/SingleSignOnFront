@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup,FormBuilder } from '@angular/forms';
+import { FormControl, FormGroup,FormBuilder, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegisterDTO } from '../Models/request/RegisterDTO';
 import { Tenant } from '../Models/Tenant';
 import { HttpServiceService } from '../Service/http-service.service';
 import { Validators } from '@angular/forms';
-import { validateToken } from '@okta/okta-auth-js';
+import {NgbAlertConfig} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-create-account',
@@ -14,49 +14,102 @@ import { validateToken } from '@okta/okta-auth-js';
 })
 export class CreateAccountComponent implements OnInit {
 
+  public isCreated: boolean =false;
+  public isError : boolean =false;
+
+  password = new FormControl(null, [
+    (c: AbstractControl) => Validators.required(c),
+    Validators.pattern(
+      /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*#?&^_-]).{8,}/
+    ),
+  ]);
+  passwordRepeat = new FormControl(null, [
+    (c: AbstractControl) => Validators.required(c),
+    Validators.pattern( /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*#?&^_-]).{8,}/  ),
+  ]);
+
+  phone = new FormControl(null, [
+    (c: AbstractControl) => Validators.required(c),
+    Validators.pattern(/[0-9\+\-\ ]/), Validators.minLength(10), Validators.maxLength(10)
+  ]);
+  email = new FormControl(null, [
+    (c: AbstractControl)=> Validators.required(c),
+    Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
+
+  ]);
+  name = new FormControl(null, [
+    (c: AbstractControl)=> Validators.required(c)]);
+
+lastname = new FormControl(null, [
+      (c: AbstractControl)=> Validators.required(c)]);
+    
   CreateAccountForm = this.fb.group({
 
-    username: ['', Validators.required],
-    fullname : ['' , Validators.required],
-    phone: ['' , Validators.required],
-    email: ['' , Validators.required],
-    password:['' , Validators.required],
-    passwordRepeat: ['' , Validators.required],
+    name: this.name,
+    lastname : this.lastname,
+    phone: this.phone,
+    email: this.email,
+    password:this.password ,
+    passwordRepeat: this.passwordRepeat ,
+  },{
+    validator: this.ConfirmedValidator("password","passwordRepeat")
+  }
+  );
 
-  });
-
-  constructor(private fb : FormBuilder, private router: Router, private service : HttpServiceService) { }
-
-  register : RegisterDTO ={ username: "",
-    fullname: "",
-    phone: "",
-    email: "",
-    password: "",
-    logintype : 0,
-    isAdmin :false,
-    isTenant :false,
-    isUser :false};
-
-  user : Tenant = { idTenant : 0,
-    fullName : "",
-    email : "" ,
-    phone : "",
-    username: ""  };
-
+  constructor( private alertConfig: NgbAlertConfig , private fb : FormBuilder, private router: Router, private service : HttpServiceService) { }
 
   ngOnInit(): void {
 
-    this.service.registerUser(this.register).subscribe((data: Tenant) => {console.log(data); this.user= {
-      ...data
-
-    }});
   }
 
   CreateUser(){
 
-    console.log(this.CreateAccountForm);
-    //once created give access to welcome page 
-    this.router.navigateByUrl("welcome", {skipLocationChange:false});
+    ///create user local and in okta 
+
+    //okta api values
+    // {
+    //   "profile": {
+    //     "firstName": "Isaac",
+    //     "lastName": "Brock",
+    //     "email": "isaac.brock@example.com",
+    //     "login": "isaac.brock@example.com",
+    //     "mobilePhone": "555-415-1337"
+    //   },
+    //   "credentials": {
+    //     "password" : { "value": "tlpWENT2m" }
+    //   }
+
+    let register : RegisterDTO ={ 
+      firstName: this.CreateAccountForm.controls["name"].value,
+      lastname:this.CreateAccountForm.controls["lastname"].value,
+      email: this.CreateAccountForm.controls["email"].value,
+      username: this.CreateAccountForm.controls["email"].value, //login or username
+      phone: this.CreateAccountForm.controls["phone"].value,
+      password: this.CreateAccountForm.controls["password"].value,
+      logintype : 0,
+      isAdmin :true,
+      isTenant :false,
+      isUser :false};
+
+      console.log(register);
+
+      //request to create user 
+      this.service.registerUser(register).subscribe((data: Tenant)=> {
+        console.log(data);
+        if(data.username == register.username){
+          //once created give access to welcome page 
+          //user created, ask to go login 
+          this.isCreated=true;
+          this.alertConfig.type="success";
+          
+          this.alertConfig.dismissible=false;
+        }else {
+          this.isCreated=false;
+          this.isError= true;
+          this.alertConfig.type="danger"
+          this.alertConfig.dismissible=true;
+        }
+      });
   }
 
   ConfirmedValidator(controlName: string, matchingControlName: string) {

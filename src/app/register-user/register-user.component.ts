@@ -15,7 +15,6 @@ export class RegisterUserComponent implements OnInit {
 
   register : RegisterUserDTO ={
     username: "",
-    fullname: "",
     phone: "",
     email: "",
     password: "",
@@ -25,7 +24,9 @@ export class RegisterUserComponent implements OnInit {
     isUser: false,
     databases: [],
     roles: [],
-    idTenantFather: 0
+    idTenantFather: 0,
+    firstName: '',
+    lastname: ''
   };
 
   response : GlobalResponse = { response:"", responseNumber:0}
