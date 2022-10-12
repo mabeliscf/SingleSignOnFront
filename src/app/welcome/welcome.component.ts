@@ -5,9 +5,7 @@ import { OktaAuthStateService, OKTA_AUTH } from '@okta/okta-angular';
 import {  Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import OktaAuth, { AuthState } from '@okta/okta-auth-js';
-import { Database } from '../Models/response/Database';
 import { TenantInfo } from '../Models/response/TenantInfo';
-import { UserLogged } from '../Models/response/UserLogged';
 import { AuthService } from '../Service/auth.service';
 import { Router } from '@angular/router';
 import { OktaUserinfo } from '../Models/response/OktaUserinfo';
@@ -19,7 +17,7 @@ import { OktaUserinfo } from '../Models/response/OktaUserinfo';
 })
 export class WelcomeComponent implements OnInit, AfterViewInit {
 
-
+  isLoggedIn$: Observable<boolean> | undefined;
   public name$!: Observable<string>;
 
 
@@ -35,6 +33,8 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
    }
 
   async ngOnInit(): Promise<void> {
+    this.isLoggedIn$ = this.auth.isUserLoggedIn;
+
     this.name$ = this._oktaAuthStateService.authState$.pipe(
       filter((authState: AuthState) => !!authState && !!authState.isAuthenticated),
       map((authState: AuthState) => authState.idToken?.claims.name ?? '')
@@ -42,11 +42,11 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
 
     console.log(this.name$);
 
-     //get user info from local db
-    if(this.name$!=undefined){
+    //  //get user info from local db
+    // if(this.name$!=undefined){
 
-      //get okta user info 
-      this.service.getOktaUserInfo().subscribe((data : OktaUserinfo)=> console.log(data));
+    //   //get okta user info 
+    //   this.service.getOktaUserInfo().subscribe((data : OktaUserinfo)=> console.log(data));
 
       this.service.getUserToken(7)
         .subscribe(a => {
@@ -56,7 +56,7 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
             this.auth.login(a);
           }
         });
-    }
+   //  }
   }
 
   ngAfterViewInit(): void {

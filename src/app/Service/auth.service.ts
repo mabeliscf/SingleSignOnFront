@@ -16,12 +16,11 @@ import { Router } from '@angular/router';
 
 export class AuthService {
 
-   jwttoken : string ="";
-
-   private loggedin = new BehaviorSubject<boolean>(false);
+  private loggedin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
    public name$!: Observable<string>;
    
    get isUserLoggedIn(){
+    this.relogin();
     return this.loggedin.asObservable();
    }
 
@@ -37,13 +36,20 @@ export class AuthService {
   // }
 
 login(data : UserLogged ) {
-
-
     this.loggedin.next(true);
     this.saveLoginUser(data);
-    this.router.navigate(['/']);
+    this.router.navigate(['/z/welcome']);
     return this.setSession(data); 
    
+}
+
+relogin(){
+  const jwttoken = localStorage.getItem("id_token");  
+  console.log("relogin -->" +jwttoken);
+  if(jwttoken!=undefined && jwttoken!=null){
+        this.loggedin.next(true);
+  }
+
 }
 
 private saveLoginUser(user : UserLogged){
@@ -65,7 +71,9 @@ logout() {
     localStorage.removeItem('username');
     localStorage.removeItem('fullname');
     localStorage.removeItem('iduser');
-    this.isLoggedIn();
+    
+    this.router.navigate(['/']);
+
 }
 
 public isLoggedIn() {

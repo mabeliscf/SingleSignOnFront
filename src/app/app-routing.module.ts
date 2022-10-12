@@ -13,29 +13,29 @@ import { LoginLayoutComponent } from './layouts/login-layout.component';
 const routes: Routes = [
   {
 
-    path:"", component: HomeLayoutComponent,canActivate: [AuthGuard],
+    path:"z", component: HomeLayoutComponent,
     children: [
-          {path:'', component:WelcomeComponent }, // canActivate: [AuthGuard]
+          {path:'welcome', component:WelcomeComponent  }, // canActivate: [AuthGuard]
           {path:'register', component:RegisterUserComponent  },
-          { path: 'login/callback', component: OktaCallbackComponent  },
     ]
   },
-  {
+  // {
 
-    path:"", component: LoginLayoutComponent,
-    children: [
+    // path:"", component: LoginLayoutComponent,
+    // children: [
           {path:'login', component:LoginComponent }, // canActivate: [AuthGuard]
           {path:'create', component:CreateAccountComponent  },
-    ]
-  },//default path
-  {path:"**", redirectTo:""},
+          
+  //   ]
+  // },//default path
+  {path:"", redirectTo:"login" , pathMatch: "full"},
   //redirect to protected path
   {
     path: 'protected',
     loadChildren: () => import('./protected/protected.module').then(m => m.ProtectedModule)//,
     ///canLoad: [AuthGuard]
   },
-
+  { path: 'login/callback', component: OktaCallbackComponent  },
 
 
 ];

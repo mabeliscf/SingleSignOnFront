@@ -31,7 +31,7 @@ export class AuthInterceptor implements HttpInterceptor {
       //use jwt token to navigate
       const jwttoken = localStorage.getItem("id_token");
      
-      const authToken = jwttoken==""?  this._oktaAuth.getAccessToken() :   jwttoken  ;
+      const authToken = jwttoken==null?  this._oktaAuth.getAccessToken() :   jwttoken  ;
 
       //assign token if we have one
       if(authToken!=undefined){
