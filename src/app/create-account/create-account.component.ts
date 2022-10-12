@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup,FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { skipPartiallyEmittedExpressions } from 'typescript';
 import { RegisterDTO } from '../Models/request/RegisterDTO';
 import { Tenant } from '../Models/Tenant';
 import { HttpServiceService } from '../Service/http-service.service';
+import { Validators } from '@angular/forms';
+import { validateToken } from '@okta/okta-auth-js';
 
 @Component({
   selector: 'app-create-account',
@@ -12,7 +14,18 @@ import { HttpServiceService } from '../Service/http-service.service';
 })
 export class CreateAccountComponent implements OnInit {
 
-  constructor(private router: Router, private service : HttpServiceService) { }
+  CreateAccountForm = this.fb.group({
+
+    username: ['', Validators.required],
+    fullname : ['' , Validators.required],
+    phone: ['' , Validators.required],
+    email: ['' , Validators.required],
+    password:['' , Validators.required],
+    passwordRepeat: ['' , Validators.required],
+
+  });
+
+  constructor(private fb : FormBuilder, private router: Router, private service : HttpServiceService) { }
 
   register : RegisterDTO ={ username: "",
     fullname: "",
@@ -41,8 +54,28 @@ export class CreateAccountComponent implements OnInit {
 
   CreateUser(){
 
+    console.log(this.CreateAccountForm);
     //once created give access to welcome page 
     this.router.navigateByUrl("welcome", {skipLocationChange:false});
   }
 
+  ConfirmedValidator(controlName: string, matchingControlName: string) {
+    return (formGroup: FormGroup) => {
+      const control = formGroup.controls[controlName];
+      const matchingControl = formGroup.controls[matchingControlName];
+      if (
+        matchingControl.errors &&
+        !matchingControl.errors.confirmedValidator
+      ) {
+        return;
+      }
+      if (control.value !== matchingControl.value) {
+        matchingControl.setErrors({ confirmedValidator: true });
+      } else {
+        matchingControl.setErrors(null);
+      }
+    };
+  }
 }
+
+

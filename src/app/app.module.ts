@@ -22,7 +22,6 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { HomeLayoutComponent } from './layouts/home-layout.component';
 import { LoginLayoutComponent } from './layouts/login-layout.component';
 
-
 const oktaAuth = new OktaAuth(config.oidc);
 
 
