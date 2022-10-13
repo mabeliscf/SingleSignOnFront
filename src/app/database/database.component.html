@@ -1,1 +1,71 @@
-<p>database works!</p>
+<div  class="row  d-flex flex-row justify-content-center ">
+   
+        <div class="col-sm-4 d-flex align-self-stretch ">
+            <ngb-alert *ngIf="showAlert">{{message}}</ngb-alert>
+          
+            <div style="width: 100%;" class="card" >
+               
+                <div class="card-body">
+                    <h5 class="card-title text-center">{{action}} DataBase</h5>
+                    <form [formGroup]="CreateDBFrom" (ngSubmit)="CreateDB()">
+                        <div class="form-group">
+                          <label for="dbName">DataBase Name </label>
+                          <input type="text" class="form-control" id="dbName"  placeholder="DataBase Name " formControlName="dbName">
+                          <div  *ngIf="dbName.invalid &&  (dbName.dirty || dbName.touched)   "  class="form-text text-danger"  >
+                            <div *ngIf="dbName.errors?.['required']"> Field is required </div>
+                        </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dbSchema">Schema</label>
+                            <input type="text" class="form-control" id="dbSchema"  placeholder="Enter Schema" formControlName="dbSchema">
+                            <div  *ngIf="dbSchema.invalid &&  (dbSchema.dirty || dbSchema.touched)   "  class="form-text text-danger"  >
+                              <div *ngIf="dbSchema.errors?.['required']"> Field is required </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="serverName">Server Name </label>
+                            <input type="text" class="form-control" id="serverName"  placeholder="Enter Server Name" formControlName="serverName">
+                            <div  *ngIf="serverName.invalid &&  (serverName.dirty || serverName.touched)   "  class="form-text text-danger"  >
+                              <div *ngIf="serverName.errors?.['required']"> Field is required </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="serverRoute">Server Route </label>
+                            <input type="text" class="form-control" id="serverRoute"  placeholder="Enter Server Route" formControlName="serverRoute">
+                            <div  *ngIf="serverRoute.invalid &&  (serverRoute.dirty || serverRoute.touched)   "  class="form-text text-danger"  >
+                              <div *ngIf="serverRoute.errors?.['required']"> Field is required </div>
+                          </div>
+                        </div>
+                         
+                        <div class="text-right">
+                            <button style="margin-right:10px ;" type="button" (click)="clearform()"  class="btn btn-primary ">clear</button>
+
+                            <button type="submit"  [disabled]="!CreateDBFrom.valid" class="btn btn-primary ">{{action}}</button>
+
+                        </div>
+                      </form>
+                </div>
+               
+              </div>
+        </div>
+     
+        <div class="col-sm-8 d-flex   justify-content-center ">
+            <div style="width: 100%;" class="card" >
+                <div class="card-header">
+                    List of Databases
+                  </div>
+                  <div class="card-body">
+                    <ngbd-table-DB-complete
+                    (deleteDB)="deleteDBRequest($event)"
+                    (updateDB)="updateDBRequest($event)"
+                    ></ngbd-table-DB-complete>
+                  </div>
+    
+            </div>
+           
+        </div>
+
+</div>
+
+
+

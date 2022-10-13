@@ -6,6 +6,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import {  OktaAuthGuard, OktaCallbackComponent } from '@okta/okta-angular';
 import { RegisterUserComponent } from './register-user/register-user.component';
 import { HomeLayoutComponent } from './layouts/home-layout.component';
+import { DatabaseComponent } from './database/database.component';
+import { RolesComponent } from './roles/roles.component';
 
 
 
@@ -16,6 +18,8 @@ const routes: Routes = [
     children: [
           {path:'welcome', component:WelcomeComponent  }, // canActivate: [AuthGuard]
           {path:'register', component:RegisterUserComponent  },
+          {path: 'database', component: DatabaseComponent},
+          {path:'roles', component: RolesComponent}
     ]
   },
   // {

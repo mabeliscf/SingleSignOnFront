@@ -1,1 +1,46 @@
-<p>roles works!</p>
+<div  class="row  d-flex flex-row justify-content-center ">
+   
+    <div class="col-sm-4 d-flex align-self-stretch ">
+        <ngb-alert *ngIf="showAlert">{{message}}</ngb-alert>
+      
+        <div style="width: 100%;" class="card" >
+            <div class="card-body">
+                <h5 class="card-title text-center">{{action}} Roles</h5>
+                <form [formGroup]="CreateRoleFrom" (ngSubmit)="CreateRoles()">
+                    <div class="form-group">
+                      <label for="roleDescription">Role Description  </label>
+                      <input type="text" class="form-control" id="roleDescription"  placeholder="Enter Role Description" formControlName="roleDescription">
+                      <div  *ngIf="roleDescription.invalid &&  (roleDescription.dirty || roleDescription.touched)   "  class="form-text text-danger"  >
+                        <div *ngIf="roleDescription.errors?.['required']"> Field is required </div>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                        <button style="margin-right:10px ;" type="button" (click)="clearform()"  class="btn btn-primary ">clear</button>
+
+
+                        <button type="submit"  [disabled]="!CreateRoleFrom.valid" class="btn btn-primary ">{{action}}</button>
+                    </div>
+                </form>
+            </div>
+          </div>
+    </div>
+ 
+    <div class="col-sm-8 d-flex   justify-content-center ">
+        <div style="width: 100%;" class="card" >
+            <div class="card-header">
+                List of Roles
+              </div>
+              <div class="card-body">
+               
+                    <ngbd-table-roles-complete
+                    (deleteRole)="deleteRoleRequest($event)"
+                    (updateRole)="updateRoleRequest($event)"
+                    ></ngbd-table-roles-complete>
+              </div>
+        </div>
+       
+    </div>
+
+</div>
+
+

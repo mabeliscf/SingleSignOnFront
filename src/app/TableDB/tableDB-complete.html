@@ -1,0 +1,51 @@
+
+<form>
+  <div class="mb-3 row">
+    <label for="table-complete-search" class="col-xs-3 col-sm-auto col-form-label">Full text search:</label>
+    <div class="col-xs-3 col-sm-auto">
+      <input id="table-complete-search" type="text" class="form-control" name="searchTerm" [(ngModel)]="service.searchTerm">
+    </div>
+    <span class="col col-form-label" *ngIf="service.loading$ | async">Loading...</span>
+  </div>
+
+  <table class="table table-striped table-condensed table-responsive">
+    <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col" sortableDB="dbSchema" (sortDB)="onSort($event)">Schema</th>
+      <th scope="col" sortableDB="dbName" (sortDB)="onSort($event)">Name</th>
+      <th scope="col" sortableDB="serverName" (sortDB)="onSort($event)">Server Name</th>
+      <th scope="col" sortableDB="serverRoute" (sortDB)="onSort($event)">Server Route</th>
+      <th scope="col">Edit</th>
+      <th scope="col">Delete</th>
+
+
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let database of databases$ | async">
+      <th scope="row">{{ database.idDb }}</th>
+      <td> <ngb-highlight [result]="database.dbSchema" [term]="service.searchTerm"></ngb-highlight> </td>
+      <td><ngb-highlight [result]="database.dbName" [term]="service.searchTerm"></ngb-highlight></td>
+      <td><ngb-highlight [result]="database.serverName" [term]="service.searchTerm"></ngb-highlight></td>
+      <td><ngb-highlight [result]="database.serverRoute" [term]="service.searchTerm"></ngb-highlight></td>
+      <td><button type="button" (click)="update(database)" class="btn btn-light">Editar</button></td>
+      <td> <button type="button" (click)="delete(database)" class="btn btn-warning">Delete</button></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between p-2">
+    <ngb-pagination
+      [collectionSize]="(total$ | async)!" [(page)]="service.page" [pageSize]="service.pageSize">
+    </ngb-pagination>
+
+    <select class="form-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+      <option [ngValue]="10">10 items per page</option>
+      <option [ngValue]="50">50 items per page</option>
+      <option [ngValue]="100">100 items per page</option>
+    </select>
+  </div>
+
+</form>

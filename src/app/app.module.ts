@@ -21,6 +21,10 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { NavbarComponent } from './navbar/navbar.component';
 import { HomeLayoutComponent } from './layouts/home-layout.component';
 import { LoginLayoutComponent } from './layouts/login-layout.component';
+import { NgbdSorDBtableHeader } from './TableDB/sortabledb.directive';
+import { NgbdTableDBComplete } from './TableDB/tableDB-complete';
+import { NgbdTableRolesComplete } from './TableRoles/table-roles-complete';
+import { NgbdSorRoletableHeader } from './TableRoles/sortableroles.directive';
 
 const oktaAuth = new OktaAuth(config.oidc);
 
@@ -38,6 +42,10 @@ const oktaAuth = new OktaAuth(config.oidc);
     NavbarComponent,
     HomeLayoutComponent,
     LoginLayoutComponent,
+    NgbdTableDBComplete, 
+    NgbdSorDBtableHeader, 
+    NgbdSorRoletableHeader,
+    NgbdTableRolesComplete
   ],
   imports: [
     BrowserModule,
@@ -48,6 +56,7 @@ const oktaAuth = new OktaAuth(config.oidc);
     FormsModule,
     ReactiveFormsModule
   ],
+  exports: [NgbdTableDBComplete,NgbdTableRolesComplete],
   providers: [
     { provide: OKTA_CONFIG, useValue: {oktaAuth  } },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

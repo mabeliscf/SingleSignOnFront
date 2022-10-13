@@ -3,7 +3,6 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { OKTA_AUTH } from '@okta/okta-angular';
 import OktaAuth from '@okta/okta-auth-js';
 import { UserLogged } from '../Models/response/UserLogged';
-import { HttpServiceService } from './http-service.service';
 
 import * as moment from "moment";
 import { BehaviorSubject, Observable } from 'rxjs';
