@@ -3,8 +3,8 @@ import { HttpServiceService } from '../Service/http-service.service';
 import { Router } from '@angular/router';
 import { OktaAuthStateService, OKTA_AUTH } from '@okta/okta-angular';
 import OktaAuth, { AuthState } from '@okta/okta-auth-js';
-import {  Observable, Subscription } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import {  Observable, Subscription, throwError } from 'rxjs';
+import { map, filter, catchError } from 'rxjs/operators';
 import {  LoginDTO } from '../Models/request/LoginDTO';
 import { UserLogged } from '../Models/response/UserLogged';
 import { AuthService } from '../Service/auth.service';
@@ -80,20 +80,18 @@ export class LoginComponent implements OnInit {
 
   public  getlogin(){
      this.service.loginlocal(this.login1)
+      .pipe( catchError( e=> throwError( this.errorLogin(e.error)) ))
       .subscribe(a => {
         if (a != undefined && a != null) {
           //save login and token 
           this.auth.login(a);
-        }else {
-          //error login 
-          this.alertConfig.type="warning";
-          this.alertConfig.dismissible=false;
-          this.isError= true;
-          this.ErrorLogin= "Username or Password incorrect!";
         }
       });
   }
 
+  cleanError(){
+    this.isError= false;
+  }
   CreateAccount(){
     //call create form 
     this._router.navigateByUrl("create", {skipLocationChange:false});
@@ -101,6 +99,15 @@ export class LoginComponent implements OnInit {
 
   public async signOutOkta(): Promise<void> {
     await this._oktaAuth.signOut().then(_=>    {this._router.navigate(['/']); });
+  }
+
+  errorLogin(error : string) {
+
+      //error login 
+      this.alertConfig.type="warning";
+      this.alertConfig.dismissible=false;
+      this.isError= true;
+      this.ErrorLogin= error;
   }
 
   

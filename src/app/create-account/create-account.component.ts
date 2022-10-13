@@ -6,6 +6,8 @@ import { Tenant } from '../Models/Tenant';
 import { HttpServiceService } from '../Service/http-service.service';
 import { Validators } from '@angular/forms';
 import {NgbAlertConfig} from '@ng-bootstrap/ng-bootstrap';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-create-account',
@@ -16,6 +18,7 @@ export class CreateAccountComponent implements OnInit {
 
   public isCreated: boolean =false;
   public isError : boolean =false;
+  public errorMessage : string ="";
 
   password = new FormControl(null, [
     (c: AbstractControl) => Validators.required(c),
@@ -65,20 +68,6 @@ lastname = new FormControl(null, [
   CreateUser(){
 
     ///create user local and in okta 
-
-    //okta api values
-    // {
-    //   "profile": {
-    //     "firstName": "Isaac",
-    //     "lastName": "Brock",
-    //     "email": "isaac.brock@example.com",
-    //     "login": "isaac.brock@example.com",
-    //     "mobilePhone": "555-415-1337"
-    //   },
-    //   "credentials": {
-    //     "password" : { "value": "tlpWENT2m" }
-    //   }
-
     let register : RegisterDTO ={ 
       firstName: this.CreateAccountForm.controls["name"].value,
       lastname:this.CreateAccountForm.controls["lastname"].value,
@@ -94,9 +83,11 @@ lastname = new FormControl(null, [
       console.log(register);
 
       //request to create user 
-      this.service.registerUser(register).subscribe((data: Tenant)=> {
+      this.service.registerUser(register)
+      .pipe( catchError( e=> throwError( this.HandleError(e.error)) ))
+      .subscribe((data: Tenant)=> {
         console.log(data);
-        if(data.username == register.username){
+        if(data!=null && data.username == register.username){
           //once created give access to welcome page 
           //user created, ask to go login 
           this.isCreated=true;
@@ -104,10 +95,7 @@ lastname = new FormControl(null, [
           
           this.alertConfig.dismissible=false;
         }else {
-          this.isCreated=false;
-          this.isError= true;
-          this.alertConfig.type="danger"
-          this.alertConfig.dismissible=true;
+         this.HandleError("Error Creating user");
         }
       });
   }
@@ -128,6 +116,15 @@ lastname = new FormControl(null, [
         matchingControl.setErrors(null);
       }
     };
+  }
+
+  HandleError(error: string){
+    this.isCreated=false;
+    this.isError= true;
+    this.errorMessage = error
+    this.alertConfig.type="danger"
+    this.alertConfig.dismissible=true;
+
   }
 }
 
