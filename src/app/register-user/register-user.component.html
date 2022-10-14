@@ -83,8 +83,8 @@
                     <!--login type-->
                     <div class="form-group">
                         <label for="logintype">Select Login type</label>
-                        <select id="logintype" formControlName="loginType" class="custom-select" [(ngModel)]="loginTypeF">
-                            <option selected>Open this select menu</option>
+                        <select id="logintype" formControlName="loginType" class="custom-select" (change)="changeLogintype($event)" >
+                            <option selected [ngValue]="0">Open this select menu</option>
                             <option value="1" [ngValue]="1">Local Login</option>
                             <option value="2" [ngValue]="2">Okta</option>
                           </select>
@@ -102,30 +102,30 @@
                      </div>
 
                      <!--if user selected , show list of tenant to select -->
-                     <div *ngIf="isUser"  class="form-group">
-                        <label for="databaseSelect">Select a Tenant </label>
-                        <select (ngModelChange)="showRoles($event)" id="databaseSelect" formControlName="idTenantFather" class="custom-select">
+                     <div *ngIf="isUserSelected"  class="form-group">
+                        <label for="idTenantFather">Select a Tenant </label>
+                        <select (ngModelChange)="showRoles($event)" id="idTenantFather" formControlName="idTenantFather" class="custom-select">
                             <option selected [ngValue]="0">Open this select menu</option>
-                            <option *ngFor="let tenant of tenants" [ngValue]="tenant.id">  {{ tenant.fullname }}  </option>
+                            <option *ngFor="let tenant of tenantsData" [ngValue]="tenant.id">  {{ tenant.fullname }}  </option>
                           </select>
                      </div>
 
                     <!--database and roles are shown depending of what is select if user, we picked tenant role and db, if tenant - roles and db in general are shown-->
                     <!--database --> <!---if user selected hide databasee -->
-                    <div *ngIf="!isUser" class="form-group">
+                    <div *ngIf="!isUserSelected" class="form-group">
                         <label for="databaseSelect">Select Database </label>
-                        <select id="databaseSelect" formControlName="database" class="custom-select">
+                        <select id="databaseSelect" formControlName="database"  class="custom-select" (change)="changeDB($event)" >
                             <option selected [ngValue]="0">Open this select menu</option>
-                            <option *ngFor="let database of databases" [ngValue]="database.idDb">  {{ database.dbName }}  </option>
+                            <option *ngFor="let database of databasesData" [ngValue]="database.idDb">  {{ database.dbName }}  </option>
                           </select>
                     </div>
 
                     <!--roles--> <!--if user selected load roles from tenant father-->
                     <div  class="form-group">
                         <label for="databaseRoles">Select Roles </label>
-                        <select id="databaseRoles" formControlName="roles" class="custom-select">
+                        <select id="databaseRoles" formControlName="roles" class="custom-select" (change)="changeRole($event)" >
                             <option selected [ngValue]="0">Open this select menu</option>
-                            <option *ngFor="let role of roles" [ngValue]="role.idRole">  {{ role.roleDescription }}  </option>
+                            <option *ngFor="let role of rolesData" [ngValue]="role.idRole">  {{ role.roleDescription }}  </option>
                           </select>
                     </div>
 

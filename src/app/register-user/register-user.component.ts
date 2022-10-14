@@ -12,6 +12,8 @@ import { Roles } from '../Models/response/Roles';
 import { TenantInfo } from '../Models/response/TenantInfo';
 import { Tenant } from '../Models/Tenant';
 import { HttpServiceService } from '../Service/http-service.service';
+import { COUNTRIES } from '../TableDB/Country';
+import { ROLES } from '../TableRoles/ROLES';
 
 @Component({
   selector: 'app-register-user',
@@ -23,8 +25,15 @@ export class RegisterUserComponent implements OnInit {
   public isCreated: boolean =false;
   public isError : boolean =false;
   public errorMessage : string ="";
-  public isUser: boolean=false;
-  public loginTypeF : number=0;
+  public isUserSelected: boolean=false;
+
+   
+  response : GlobalResponse = { response:"", responseNumber:0}
+  rolesData: Roles[] | undefined;
+  databasesData: Database[] | undefined;
+  tenantsData: TenantInfo[] | undefined;
+  
+
 
   password = new FormControl(null, [
     (c: AbstractControl) => Validators.required(c),
@@ -51,7 +60,8 @@ export class RegisterUserComponent implements OnInit {
 
 lastname = new FormControl(null, [
       (c: AbstractControl)=> Validators.required(c)]);
-    
+
+  
   RegisterUserForm = this.fb.group({
 
     name: this.name,
@@ -60,45 +70,18 @@ lastname = new FormControl(null, [
     email: this.email, //equals username
     password:this.password ,
     passwordRepeat: this.passwordRepeat ,
-    loginType : [0],
-    isTenant: [false],
-    isUser: [false],
-    database : [""],
-    roles : [""],
-    idTenantFather: [0]
-
+    loginType :  [0],
+    isTenant: [null],
+    isUser: [null],
+    database :[0],
+    roles : [0],
+    idTenantFather: [null]
 
   },{
     validator: this.ConfirmedValidator("password","passwordRepeat")
   }
   );
 
- 
-
- // typeLogin :typeLogin | undefined;
-  register : RegisterUserDTO ={
-    firstName: '',
-    lastname: '',
-    username: "",
-    phone: "",
-    email: "",
-    password: "",
-    logintype: 0,
-    isAdmin: false,
-    isTenant: false,
-    isUser: false,
-    databases: [],
-    roles: [],
-    idTenantFather: 0,
-  
-  };
-
-
-  response : GlobalResponse = { response:"", responseNumber:0}
-  roles: Roles[] | undefined;
-  databases: Database[] | undefined;
-  tenants: TenantInfo[] | undefined;
-  
 
   constructor( private alertConfig: NgbAlertConfig , private fb : FormBuilder, private router: Router, private service : HttpServiceService) { }
 
@@ -111,13 +94,13 @@ lastname = new FormControl(null, [
     // }});
 
     //get all get Al DB
-    this.service.getAllDB().subscribe((data: Database[]) => {console.log(data); this.databases= {
+    this.service.getAllDB().subscribe((data: Database[]) => {console.log(data); this.databasesData= {
       ...data
 
     }});
 
     //get all Roles
-    this.service.getAllRole().subscribe((data: Roles[]) => {console.log(data); this.roles= {
+    this.service.getAllRole().subscribe((data: Roles[]) => {console.log(data); this.rolesData= {
       ...data
 
     }});
@@ -125,37 +108,80 @@ lastname = new FormControl(null, [
     //Get Al tenants
     this.service.getAllTenants()
     .pipe(catchError(e=> throwError( this.HandleError( e.error)  )))
-    .subscribe((data: TenantInfo[])=> {console.log(data);   this.tenants =data; });
+    .subscribe((data: TenantInfo[])=> {console.log(data);   this.tenantsData =data; });
 
+
+    this.rolesData = ROLES;
+    this.databasesData = COUNTRIES;
+   // this.tenantsData=null; //TODO: load tenat data
 
 
    }
 
+  //TODO: handle radio button and change status
    //show list of tenant 
    userSelected(){
 
-      this.isUser=true;
-      console.log(this.loginTypeF);
-      this.RegisterUserForm.controls["loginType"].setValue(this.loginTypeF);
+      this.isUserSelected=true;
+ 
       this.RegisterUserForm.controls["isTenant"].reset();
    }
 
    tenantSelected(){
-    this.isUser=false;
+    this.isUserSelected=false;
     this.RegisterUserForm.controls["isUser"].reset();
 
    }
 
-   showRoles(idRole: string){
-    console.log(idRole);
+   showRoles(select: any){
+    //TODO: show one role or the other
+    this.RegisterUserForm.controls["idTenantFather"].setValue(select.target.selectedOptions[0].index);
+    console.log(this.tenantsData?.filter(a=> a.id== select.target.selectedOptions[0].index));
 
    }
+
+ //login type 
+ changeLogintype(select: any)
+ {
+    this.RegisterUserForm.controls["loginType"].setValue(select.target.selectedOptions[0].index);
+ }
+  //login type 
+  changeDB(select: any)
+  {
+     this.RegisterUserForm.controls["database"].setValue( this.databasesData?.find(a=> a.dbName==select.target.selectedOptions[0].text)?.idDb);
+  }
+   //login type 
+   changeRole(select: any)
+   {
+      this.RegisterUserForm.controls["roles"].setValue( this.rolesData?.find(a=> a.roleDescription==select.target.selectedOptions[0].text)?.idRole);
+   }
+
 
    RegisterUser(){
     console.log(this.RegisterUserForm);
    }
 
+   //TODO create model and create update model 
   CreateUser(){
+
+  //   // typeLogin :typeLogin | undefined;
+  // register : RegisterUserDTO ={
+  //   firstName: '',
+  //   lastname: '',
+  //   username: "",
+  //   phone: "",
+  //   email: "",
+  //   password: "",
+  //   logintype: 0,
+  //   isAdmin: false,
+  //   isTenant: false,
+  //   isUser: false,
+  //   databases: [],
+  //   roles: [],
+  //   idTenantFather: 0,
+  
+  // };
+
 
     ///create user local and in okta 
     let register : RegisterDTO ={ 
