@@ -4,7 +4,7 @@
         <ngb-alert *ngIf="isError"  >{{errorMessage}}</ngb-alert>
         <div class="card" *ngIf="!isCreated"  >
             <div class="card-body">
-                <h5 class="card-title text-center">Create User</h5>
+                <h5 class="card-title text-center">{{action}} User</h5>
                 <form [formGroup]="RegisterUserForm" (ngSubmit)="CreateUser()">
                     <!--First NAme -->
                     <div class="form-group">
@@ -41,8 +41,6 @@
                           <div *ngIf="phone.errors?.['pattern']">Only Numbers </div>
                           <div *ngIf="phone.errors?.['minlength']"> Lenght must be 10</div>
                           <div *ngIf="phone.errors?.['maxlength']"> Lenght must be 10</div>
-
-                          
                       </div>
                       </div>
                       <!--passworkd-->
@@ -104,7 +102,7 @@
                      <!--if user selected , show list of tenant to select -->
                      <div *ngIf="isUserSelected"  class="form-group">
                         <label for="idTenantFather">Select a Tenant </label>
-                        <select (ngModelChange)="showRoles($event)" id="idTenantFather" formControlName="idTenantFather" class="custom-select">
+                        <select (change)="selectTenant($event)" id="idTenantFather" formControlName="idTenantFather" class="custom-select">
                             <option selected [ngValue]="0">Open this select menu</option>
                             <option *ngFor="let tenant of tenantsData" [ngValue]="tenant.id">  {{ tenant.fullname }}  </option>
                           </select>
@@ -130,7 +128,9 @@
                     </div>
 
                     <div class="text-right">
-                        <button type="submit"  [disabled]="!RegisterUserForm.valid" class="btn btn-primary ">Create</button>
+                        <button style="margin-right:10px ;" type="button" (click)="clearform()"  class="btn btn-primary ">clear</button>
+
+                        <button type="submit"  [disabled]="!RegisterUserForm.valid" class="btn btn-primary ">{{action}}</button>
                     </div>
                 </form>
             </div>

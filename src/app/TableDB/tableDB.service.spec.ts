@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { TableDBService } from './tabledB.service';
+import { TableDBService } from './tableDB.service';
 
 
 describe('TableDBService', () => {

@@ -20,6 +20,7 @@ export class NavbarComponent implements OnInit {
 
   isLoggedIn$: Observable<boolean> | undefined;
   public isAuthenticated$!: Observable<boolean>;
+  public name$!: Observable<string>;
 
   public isError : boolean =false;
   public errorMessage : string ="";
@@ -31,25 +32,35 @@ export class NavbarComponent implements OnInit {
     roles: [],
     databases: [],
     id: 0,
-    fullname: '',
-    email: '',
-    phone: '',
-    username: '',
-    isAdmin: ''
+    fullname: 'Raemil Corniel',
+    email: 'raemilcorniel@hotmail.com',
+    phone: '8293550691',
+    username: 'raemilcorniel@hotmail.com',
+    isAdmin: false
   };
 
   constructor( private alertConfig: NgbAlertConfig , private auth : AuthService, private service : HttpServiceService, private router:Router, private _oktaStateService: OktaAuthStateService, 
-    @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth) { }
+    @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth ,private _oktaAuthStateService: OktaAuthStateService) { }
 
 
 
   ngOnInit(): void {
-    this.isLoggedIn$ = this.auth.isUserLoggedIn;
+      //validate if user is  save in local storage and save it
+      this.isLoggedIn$ = this.auth.isUserLoggedIn;
 
-    this.isAuthenticated$ = this._oktaStateService.authState$.pipe(
-      filter((s: AuthState) => !!s),
-      map((s: AuthState) => s.isAuthenticated ?? false)
-    );
+       //TODO get id from claims
+       this.name$ = this._oktaAuthStateService.authState$.pipe(
+        filter((authState: AuthState) => !!authState && !!authState.isAuthenticated),
+        map((authState: AuthState) => authState.idToken?.claims.name ?? '')
+      );
+   
+      //verify if user is auntheticated
+      this.isAuthenticated$ = this._oktaStateService.authState$.pipe(
+        filter((s: AuthState) => !!s),
+        map((s: AuthState) => s.isAuthenticated ?? false)
+      );
+
+    //validate if login was with okta and create localstorge with login
     if(this.isAuthenticated$ && !this.isLoggedIn$){
 
       this.service.getOktaUserInfo().subscribe((data : OktaUserinfo)=> {console.log(data); this.user.username= data.nickname; this.user.fullName= data.name; this.user.id= 7 });
@@ -57,20 +68,25 @@ export class NavbarComponent implements OnInit {
       this.service.getUserToken(this.user.id)
         .subscribe(a => {
           if (a != undefined) {
-           
             //save login and token 
-            this.user.token= a.token;
-            this.user.expiresIn= 111111111111111111111;
-            console.log(this.user);
+            this.user.token= a.token;   this.user.expiresIn= 111111111111111111111;  console.log(this.user);
+            //save user data in local storage 
             this.auth.login(this.user);
           }
         });
     }
+    
+    //load user data from local storage 
+    if(this.isLoggedIn$ ){
+      //get id from local storage
+      this.userData.id = Number(localStorage.getItem("iduser")?.toString() ) ;
+  
+      ///get data of user, to show in navbar 
+      this.service.getUserbyID(this.userData.id)
+      .pipe( catchError( e=> throwError( this.HandleError(e.error)) ))
+      .subscribe((data: UsersInfo)=> {console.log(data); this.userData=data});
 
-    ///get all roles 
-    this.service.getUserbyID(3)
-    .pipe( catchError( e=> throwError( this.HandleError(e.error)) ))
-    .subscribe((data: UsersInfo)=> {console.log(data); this.userData=data});
+    }
   }
 
 

@@ -1,0 +1,15 @@
+*{
+    font-size: 14px;
+}
+.row{
+    margin-top: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+   overflow-x:auto;
+}
+.vr{
+    color: grey;
+}
+.crd{
+   margin-left: 10px;
+}

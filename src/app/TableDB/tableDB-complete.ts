@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import { Database } from '../Models/response/Database';
 
 import {NgbdSorDBtableHeader, SortEvent} from './sortabledb.directive';
-import { TableDBService } from './tabledB.service';
+import { TableDBService } from './tableDB.service';
 
 
 

@@ -18,11 +18,10 @@ const routes: Routes = [
     path:"z", component: HomeLayoutComponent,
     children: [
           {path:'welcome', component:WelcomeComponent  }, // canActivate: [AuthGuard]
-          {path:'register', component:RegisterUserComponent  },
+          {path:'register', component:RegisterUserComponent },
           {path: 'database', component: DatabaseComponent},
-          {path:'roles', component: RolesComponent},
+          {path:'roles', component: RolesComponent },
           {path:'users', component: UsersComponent},
-
     ]
   },
   // {

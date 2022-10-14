@@ -25,6 +25,7 @@ import { NgbdSorDBtableHeader } from './TableDB/sortabledb.directive';
 import { NgbdTableDBComplete } from './TableDB/tableDB-complete';
 import { NgbdTableRolesComplete } from './TableRoles/table-roles-complete';
 import { NgbdSorRoletableHeader } from './TableRoles/sortableroles.directive';
+import { NgbdTableUserFiltering } from './users/table-filtering';
 
 const oktaAuth = new OktaAuth(config.oidc);
 
@@ -45,7 +46,8 @@ const oktaAuth = new OktaAuth(config.oidc);
     NgbdTableDBComplete, 
     NgbdSorDBtableHeader, 
     NgbdSorRoletableHeader,
-    NgbdTableRolesComplete
+    NgbdTableRolesComplete,
+    NgbdTableUserFiltering
   ],
   imports: [
     BrowserModule,
@@ -56,7 +58,7 @@ const oktaAuth = new OktaAuth(config.oidc);
     FormsModule,
     ReactiveFormsModule
   ],
-  exports: [NgbdTableDBComplete,NgbdTableRolesComplete],
+  exports: [NgbdTableDBComplete,NgbdTableRolesComplete,NgbdTableUserFiltering],
   providers: [
     { provide: OKTA_CONFIG, useValue: {oktaAuth  } },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

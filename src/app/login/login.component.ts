@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
   public isLoggedIn$: Observable<boolean> | undefined;
   public isAuthenticated$!: Observable<boolean>;
   public user : UserLogged={username: '', fullName: "", expiresIn:0, token:"", id:0} ;
-  public name$!: Observable<string>;
+ 
   public ErrorLogin: string="";
   public isError: boolean=false;
 
@@ -39,46 +39,47 @@ export class LoginComponent implements OnInit {
   }
 
    ngOnInit() {
-    
-
-    let aut : boolean=false;
-    this.isLoggedIn$ = this.auth.isUserLoggedIn;
+       //validate if theres any admin root 
+       this.service.isAdminCreated().subscribe((data: boolean)=> this.showCreateAccount =data);
+       
+       
+       //validate if user is  save in local storage and save it
+       this.isLoggedIn$ = this.auth.isUserLoggedIn;
+      
+       //get okta validation
+       let autOkta : boolean=false;
+       this.isAuthenticated$ = this._oktaStateService.authState$.pipe(
+         filter((s: AuthState) => !!s),
+         map((s: AuthState) => { autOkta= s.isAuthenticated ?? false; return s.isAuthenticated ?? false;} )
+       );
+      
    
-    this.isAuthenticated$ = this._oktaStateService.authState$.pipe(
-      filter((s: AuthState) => !!s),
-      map((s: AuthState) => { aut= s.isAuthenticated ?? false; return s.isAuthenticated ?? false;} )
-    );
-    this.name$ = this._oktaAuthStateService.authState$.pipe(
-      filter((authState: AuthState) => !!authState && !!authState.isAuthenticated),
-      map((authState: AuthState) => authState.idToken?.claims.name ?? '')
-    );
-
-
-    if(!aut){
-      //validate data 
-        this.service.getUserToken(7)
-        .subscribe(a => {
-          if (a != undefined) {
-            //save login and token 
-            this.user.token= a.token;
-            this.user.expiresIn= 111111111111111111111;
-            console.log(this.user);
-            this.auth.login(this.user);
-            this._router.navigate(['/z/welcome']);
-          }
-        });
-    }
-
-    //validate if theres any admin root 
-    this.service.isAdminCreated().subscribe((data: boolean)=> this.showCreateAccount =data);
-  }
+       //check if user is logged 
+       if(!autOkta ||  this.isLoggedIn$ ){
+        //  //validate if token exist
+        //  if(localStorage.getItem("id_token")==null){
+        //     //get data from db and generate a new token 
+        //     this.service.getUserToken(7)
+        //     .subscribe(a => {
+        //       if (a != undefined) {
+        //         //save login and token  
+        //         this.user.token= a.token;  this.user.expiresIn= a.expiresIn;  console.log(this.user);
+        //         this.auth.login(this.user);
+             
+        //       }
+        //     });
+        //  }
+         //redirect to welcome page 
+         this._router.navigate(['/z/welcome']);
+      }
+}
 
   public async signinOkta() : Promise<void> {
     await this._oktaAuth.signInWithRedirect();
   }
 
   public  getlogin(){
-     this.service.loginlocal(this.login1)
+      this.service.loginlocal(this.login1)
       .pipe( catchError( e=> throwError( this.errorLogin(e.error)) ))
       .subscribe(a => {
         if (a != undefined && a != null) {

@@ -1,0 +1,30 @@
+
+<form>
+  <div class="mb-3 row">
+    <label for="table-filtering-search" class="col-xs-3 col-sm-auto col-form-label">Full text search:</label>
+    <div class="col-xs-3 col-sm-auto">
+      <input id="table-filtering-search" class="form-control" type="text" [formControl]="filter">
+    </div>
+  </div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col">ID</th>
+    <th scope="col">FullName</th>
+    <th scope="col">Email</th>
+    <th scope="col">Phone</th>
+    <th scope="col">Edit</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let user of userinfo$ | async; index as i">
+    <th scope="row">{{user.id}}</th>
+    <td> <ngb-highlight [result]="user.fullname" [term]="filter.value"></ngb-highlight> </td>
+    <td><ngb-highlight [result]="user.email " [term]="filter.value"></ngb-highlight></td>
+    <td><ngb-highlight [result]="user.phone | number" [term]="filter.value"></ngb-highlight></td>
+    <td><button type="button" (click)="edit(user)" class="btn btn-light">Editar</button></td>
+  </tr>
+  </tbody>
+</table>
