@@ -61,9 +61,7 @@ lastname = new FormControl(null, [
 
   constructor( private alertConfig: NgbAlertConfig , private fb : FormBuilder, private router: Router, private service : HttpServiceService) { }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {  }
 
   CreateUser(){
 

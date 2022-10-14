@@ -56,7 +56,6 @@ export class LoginComponent implements OnInit {
 
     if(!aut){
       //validate data 
-    
         this.service.getUserToken(7)
         .subscribe(a => {
           if (a != undefined) {

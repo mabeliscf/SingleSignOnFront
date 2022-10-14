@@ -1,11 +1,13 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbAlertConfig } from '@ng-bootstrap/ng-bootstrap';
 import { OktaAuthStateService, OKTA_AUTH } from '@okta/okta-angular';
 import OktaAuth, { AuthState } from '@okta/okta-auth-js';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, filter, map } from 'rxjs/operators';
 import { OktaUserinfo } from '../Models/response/OktaUserinfo';
 import { UserLogged } from '../Models/response/UserLogged';
+import { UsersInfo } from '../Models/response/UsersInfo';
 import { AuthService } from '../Service/auth.service';
 import { HttpServiceService } from '../Service/http-service.service';
 
@@ -18,11 +20,28 @@ export class NavbarComponent implements OnInit {
 
   isLoggedIn$: Observable<boolean> | undefined;
   public isAuthenticated$!: Observable<boolean>;
-  user : UserLogged={username: '', fullName: "", expiresIn:0, token:"", id:0} ;
 
+  public isError : boolean =false;
+  public errorMessage : string ="";
 
-  constructor(private auth : AuthService, private service : HttpServiceService, private router:Router, private _oktaStateService: OktaAuthStateService, 
+  public user : UserLogged={username: '', fullName: "", expiresIn:0, token:"", id:0} ;
+
+  public userData: UsersInfo= {
+    idTenantFather: 0,
+    roles: [],
+    databases: [],
+    id: 0,
+    fullname: '',
+    email: '',
+    phone: '',
+    username: '',
+    isAdmin: ''
+  };
+
+  constructor( private alertConfig: NgbAlertConfig , private auth : AuthService, private service : HttpServiceService, private router:Router, private _oktaStateService: OktaAuthStateService, 
     @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth) { }
+
+
 
   ngOnInit(): void {
     this.isLoggedIn$ = this.auth.isUserLoggedIn;
@@ -46,10 +65,12 @@ export class NavbarComponent implements OnInit {
             this.auth.login(this.user);
           }
         });
-
     }
-    
 
+    ///get all roles 
+    this.service.getUserbyID(3)
+    .pipe( catchError( e=> throwError( this.HandleError(e.error)) ))
+    .subscribe((data: UsersInfo)=> {console.log(data); this.userData=data});
   }
 
 
@@ -62,6 +83,14 @@ export class NavbarComponent implements OnInit {
       this.isLoggedIn$ = this.auth.isUserLoggedIn;
     }
 
+  }
+
+  HandleError(error: string){
+    
+    this.isError= true;
+    this.errorMessage = error
+    this.alertConfig.type="danger"
+    this.alertConfig.dismissible=true;
   }
 
 

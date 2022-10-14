@@ -27,7 +27,6 @@ export class RolesComponent implements OnInit {
   public idRole: number=0;
 
 
-  //roleFather = new FormControl(null, [ (c: AbstractControl)=> Validators.required(c)]);
   roleDescription = new FormControl(null, [ (c: AbstractControl)=> Validators.required(c)]);
   
   CreateRoleFrom = this.fb.group({

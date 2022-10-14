@@ -1,1 +1,140 @@
-<p>register-user works!</p>
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+        <ngb-alert *ngIf="isCreated"  >Account Created!  Please  <a style="color: blue ;" href="/login" >Log in</a></ngb-alert>
+        <ngb-alert *ngIf="isError"  >{{errorMessage}}</ngb-alert>
+        <div class="card" *ngIf="!isCreated"  >
+            <div class="card-body">
+                <h5 class="card-title text-center">Create User</h5>
+                <form [formGroup]="RegisterUserForm" (ngSubmit)="CreateUser()">
+                    <!--First NAme -->
+                    <div class="form-group">
+                      <label for="name">First Name </label>
+                      <input type="text" class="form-control" id="name"  placeholder="Enter First Name " formControlName="name">
+                      <div  *ngIf="name.invalid &&  (name.dirty || name.touched)   "  class="form-text text-danger"  >
+                        <div *ngIf="name.errors?.['required']"> Field is required </div>
+                    </div>
+                    </div>
+                    <!--last NAme -->
+                    <div class="form-group">
+                        <label for="lastname">Last Name</label>
+                        <input type="text" class="form-control" id="lastname"  placeholder="Enter lastname" formControlName="lastname">
+                        <div  *ngIf="lastname.invalid &&  (lastname.dirty || lastname.touched)   "  class="form-text text-danger"  >
+                          <div *ngIf="lastname.errors?.['required']"> Field is required </div>
+                      </div>
+                      
+                      </div>
+                    <!--Email -->
+                      <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email"  placeholder="Enter Email" formControlName="email">
+                        <div  *ngIf="email.invalid &&  (email.dirty || email.touched)   "  class="form-text text-danger"  >
+                          <div *ngIf="email.errors?.['required']"> Field is required </div>
+                          <div *ngIf="email.errors?.['pattern']">format invalid </div>
+                      </div>
+                      </div>
+                      <!--Phone number-->
+                      <div class="form-group">
+                        <label for="phone">Phone number</label>
+                        <input type="" class="form-control" id="phone"  placeholder="Enter Phone Number" formControlName="phone">
+                        <div  *ngIf="phone.invalid &&  (phone.dirty || phone.touched)   "  class="form-text text-danger"  >
+                          <div *ngIf="phone.errors?.['required']"> Field is required </div>
+                          <div *ngIf="phone.errors?.['pattern']">Only Numbers </div>
+                          <div *ngIf="phone.errors?.['minlength']"> Lenght must be 10</div>
+                          <div *ngIf="phone.errors?.['maxlength']"> Lenght must be 10</div>
+
+                          
+                      </div>
+                      </div>
+                      <!--passworkd-->
+                    <div class="form-group">
+                      <label for="password">Password</label>
+                      <input type="password" class="form-control" id="password" placeholder="Enter Password" formControlName="password">
+                        <div  *ngIf="password.invalid &&  (password.dirty || password.touched)   "  class="form-text text-danger"  >
+                            <div *ngIf="password.errors?.['required']">
+                              Field is required
+                            </div>
+                            <div *ngIf="password.errors?.['pattern']">
+                              Password must contain at least one number, one uppercase and a
+                              lowercase letter and at least 8 characters<br />Password cannot
+                              contain whitespace
+                            </div>
+                        </div>
+                    </div>
+                      <!--passworkd-->
+
+                    <div class="form-group">
+                        <label for="password2">Repeat Password</label>
+                        <input type="password" class="form-control" id="password2" placeholder="Enter Password again" formControlName="passwordRepeat">
+                        <div  *ngIf="passwordRepeat.invalid &&  (passwordRepeat.dirty || passwordRepeat.touched) " class="form-text text-danger" >
+                          <div *ngIf="passwordRepeat.errors?.['required']">
+                            Field is required
+                          </div>
+                          <div *ngIf="passwordRepeat.errors?.['pattern']">
+                            Password must contain at least one number, one uppercase and a
+                            lowercase letter and at least 8 characters<br />Password cannot
+                            contain whitespace
+                          </div>
+                          <div *ngIf="passwordRepeat.errors?.['confirmedValidator']">
+                            Passwords did not match
+                          </div>
+                        </div>
+                    </div>
+
+                    <!--login type-->
+                    <div class="form-group">
+                        <label for="logintype">Select Login type</label>
+                        <select id="logintype" formControlName="loginType" class="custom-select" [(ngModel)]="loginTypeF">
+                            <option selected>Open this select menu</option>
+                            <option value="1" [ngValue]="1">Local Login</option>
+                            <option value="2" [ngValue]="2">Okta</option>
+                          </select>
+                    </div>
+                     <!--tenant or user-->
+                     <div  class="form-group">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input (click)="tenantSelected()" formControlName="isTenant" type="radio" id="isTenant" name="isTenant" class="custom-control-input">
+                            <label class="custom-control-label" for="isTenant">Tenant</label>
+                          </div>
+                          <div class="custom-control custom-radio custom-control-inline">
+                            <input (click)="userSelected()" formControlName="isUser" type="radio" id="isUser" name="isUser" class="custom-control-input">
+                            <label class="custom-control-label" for="isUser">User</label>
+                          </div>
+                     </div>
+
+                     <!--if user selected , show list of tenant to select -->
+                     <div *ngIf="isUser"  class="form-group">
+                        <label for="databaseSelect">Select a Tenant </label>
+                        <select (ngModelChange)="showRoles($event)" id="databaseSelect" formControlName="idTenantFather" class="custom-select">
+                            <option selected [ngValue]="0">Open this select menu</option>
+                            <option *ngFor="let tenant of tenants" [ngValue]="tenant.id">  {{ tenant.fullname }}  </option>
+                          </select>
+                     </div>
+
+                    <!--database and roles are shown depending of what is select if user, we picked tenant role and db, if tenant - roles and db in general are shown-->
+                    <!--database --> <!---if user selected hide databasee -->
+                    <div *ngIf="!isUser" class="form-group">
+                        <label for="databaseSelect">Select Database </label>
+                        <select id="databaseSelect" formControlName="database" class="custom-select">
+                            <option selected [ngValue]="0">Open this select menu</option>
+                            <option *ngFor="let database of databases" [ngValue]="database.idDb">  {{ database.dbName }}  </option>
+                          </select>
+                    </div>
+
+                    <!--roles--> <!--if user selected load roles from tenant father-->
+                    <div  class="form-group">
+                        <label for="databaseRoles">Select Roles </label>
+                        <select id="databaseRoles" formControlName="roles" class="custom-select">
+                            <option selected [ngValue]="0">Open this select menu</option>
+                            <option *ngFor="let role of roles" [ngValue]="role.idRole">  {{ role.roleDescription }}  </option>
+                          </select>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="submit"  [disabled]="!RegisterUserForm.valid" class="btn btn-primary ">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
