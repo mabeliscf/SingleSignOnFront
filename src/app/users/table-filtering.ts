@@ -30,7 +30,9 @@ function search(text: string, pipe: PipeTransform): TenantInfo[] {
   export class NgbdTableUserFiltering {
   
     @Output() editUser : EventEmitter<TenantInfo> = new EventEmitter();
-
+    @Output() selectedRow : EventEmitter<TenantInfo> = new EventEmitter();
+    
+    
     
     userinfo$: Observable<TenantInfo[]>;
     filter = new FormControl('');
@@ -44,6 +46,10 @@ function search(text: string, pipe: PipeTransform): TenantInfo[] {
 
     edit(user : TenantInfo){
         this.editUser.emit(user);
+
+    }
+    SelectRow(user : TenantInfo){
+      this.selectedRow.emit(user);
 
     }
   }

@@ -3,8 +3,8 @@
 }
 .row{
     margin-top: 20px;
-    margin-left: 5%;
-    margin-right: 5%;
+  margin-left: 0px;
+  margin-right: 0px;
    overflow-x:auto;
 }
 .vr{
@@ -12,4 +12,8 @@
 }
 .crd{
    margin-left: 10px;
+}
+.createbtn{
+    margin-right: 10px;
+    padding-right: 10px;
 }

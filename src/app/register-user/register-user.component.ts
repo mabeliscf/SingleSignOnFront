@@ -16,6 +16,7 @@ import { TenantInfo } from '../Models/response/TenantInfo';
 import { Tenant } from '../Models/Tenant';
 import { TenantRole } from '../Models/TenantRole';
 import { HttpServiceService } from '../Service/http-service.service';
+import { UserService } from '../Service/user.service';
 import { COUNTRIES } from '../TableDB/Country';
 import { ROLES } from '../TableRoles/ROLES';
 import { TENANTINFOTEST } from './TENANTINFOTEST';
@@ -89,12 +90,17 @@ lastname = new FormControl(null, [
   );
 
 
-  constructor( private alertConfig: NgbAlertConfig , private fb : FormBuilder, private router: Router, private service : HttpServiceService) { }
+  constructor(private userService : UserService, private alertConfig: NgbAlertConfig , private fb : FormBuilder, private router: Router, private service : HttpServiceService) { }
 
   ngOnInit(): void { 
       
 
     this.action="Create";
+
+    //verify is is a update 
+    this.userService.selectedUserUpdate$.subscribe((data: TenantInfo)=> {console.log(data); 
+    //todo : fill form with data to update
+    })
     
     // //get all get Al DB
     // this.service.getAllDB().subscribe((data: Database[]) => {console.log(data); this.databasesData= {

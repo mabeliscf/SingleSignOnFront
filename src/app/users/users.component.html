@@ -1,7 +1,10 @@
-<div   class="row  d-flex flex-row justify-content-center  ">
-   
- 
-    <div class=" crd d-flex   justify-content-center ">
+
+    <div  class="createbtn row d-flex flex-row justify-content-end ">
+      <button  type="button" class="btn btn-outline-secondary" >Create User  </button>
+
+    </div>
+    <div   class="row  d-flex flex-row justify-content-center  ">
+      <div class=" crd d-flex   justify-content-center ">
         <div style="width: 100%;" class="card" >
             <div class="card-header">
                 List of Users
@@ -11,69 +14,69 @@
                     
                     <ngbd-table-users-filtering
                     (editUser)="editUserRequest($event)"
+                    (selectedRow)="LoadRolesRowSelected($event)"
+  
                     ></ngbd-table-users-filtering>
               </div>
         </div>
-       
+      </div>
+      <div class="crd d-flex   justify-content-center ">
+          <div style="width: 100%;" class="card" >
+              <div class="card-header">
+                  List of Roles
+                </div>
+              
+                <div class="card-body">
+                  <table class="table table-striped">
+                      <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Role Description</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr *ngFor="let rol of roles">
+                        <th scope="row">{{rol.idRole}}</th>
+                        <td> <ngb-highlight [result]="rol.roleDescription" ></ngb-highlight> </td>
+                      </tr>
+                      </tbody>
+                  </table>
+                </div>
+          </div>
+      </div>
+      <div class="crd d-flex   justify-content-center ">
+          <div style="width: 100%;" class="card" >
+              <div class="card-header">
+                  List of Database
+                </div>
+              
+                <div class="card-body">
+                  <table class="table table-striped">
+                      <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Schema</th>
+                        <th scope="col">Server Name</th>
+                        <th scope="col">Server Route</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr *ngFor="let db of database">
+                        <th scope="row">{{db.idDb}}</th>
+                        <td> <ngb-highlight [result]="db.dbName" ></ngb-highlight> </td>
+                        <td> <ngb-highlight [result]="db.dbSchema" ></ngb-highlight> </td>
+                        <td> <ngb-highlight [result]="db.serverName" ></ngb-highlight> </td>
+                        <td> <ngb-highlight [result]="db.serverRoute" ></ngb-highlight> </td>
+    
+                      </tr>
+                      </tbody>
+                  </table>
+                </div>
+          </div>
+        
+      </div>
+
     </div>
-    <div class="crd d-flex   justify-content-center ">
-        <div style="width: 100%;" class="card" >
-            <div class="card-header">
-                List of Roles
-              </div>
-            
-              <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Role Description</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let rol of tenantinfo.roles | async; index as i">
-                      <th scope="row">{{rol.idRole}}</th>
-                      <td> <ngb-highlight [result]="rol.roleDescription" ></ngb-highlight> </td>
-                    </tr>
-                    </tbody>
-                </table>
-              </div>
-        </div>
-       
-    </div>
-    <div class="crd d-flex   justify-content-center ">
-        <div style="width: 100%;" class="card" >
-            <div class="card-header">
-                List of Database
-              </div>
-            
-              <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Schema</th>
-                      <th scope="col">Server Name</th>
-                      <th scope="col">Server Route</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let db of tenantinfo.database | async; index as i">
-                      <th scope="row">{{db.idDb}}</th>
-                      <td> <ngb-highlight [result]="db.dbName" ></ngb-highlight> </td>
-                      <td> <ngb-highlight [result]="db.dbSchema" ></ngb-highlight> </td>
-                      <td> <ngb-highlight [result]="db.serverName" ></ngb-highlight> </td>
-                      <td> <ngb-highlight [result]="db.serverRoute" ></ngb-highlight> </td>
 
-                    </tr>
-                    </tbody>
-                </table>
-              </div>
-        </div>
-       
-    </div>
-
-</div>
-
-
+  
