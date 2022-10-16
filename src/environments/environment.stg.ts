@@ -1,4 +1,6 @@
 export const environment = {
   production: false,
-  apiURl: 'https://localhost:7256/',
+  apiURl: 'https://stg:8080/',
+  oktaBaseURL: 'https://oktaurlSTG/'
+
 };

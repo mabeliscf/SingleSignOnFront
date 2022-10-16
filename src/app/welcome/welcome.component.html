@@ -1,34 +1,45 @@
 
- <div class="profile-card">
-    <div class="shield"></div>
-    <p *ngIf="name$ | async as name">
-        Hello {{name}}!
-    </p>
-  </div>
-<div class="row">
-    <div class=" banner col">
-       <div style="display: flex;">
-        <img class="imgBanner " src="favicon.ico">
-
-       </div>
-
-        <!--only show roles availables ex. link1 link2 to tenant1 -->
-        <ul class="nav justify-content-end">
-            <div *ngFor="let rol of roles">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">{{rol.roleDescription}}</a>
-                </li>
+       
+        <div class="mainHeader borders-space">
+            <div class="baner">
+                <label class="title mainText">This website is awesome</label> 
+                <p class=" subtitle ">This website has some subtext that goes here under the main title. it's smaller font and the color is lower contrast</p>
+                <button class="subtitle" >Sign up</button>
             </div>
-            <li class="nav-item">
-            <a class="nav-link disabled username" href="#" id="user">{{userlogin}}</a>
-            </li>
-        </ul>
-    </div>
-   
-</div>
-<div class="row justify-content-center">
-    <div class="col text-center">
-        <img src="../assets/welcome.jpeg" />
-
-    </div>
-</div>
+            <img class="img-header" alt="this is a placeholder for an image" src="https://via.placeholder.com/150">
+        </div>
+        <div class="body1 borders-space ">
+            <label class="body1-label"> Some Rando Information</label>
+            <div class="body1-sub borders-space">
+                <div class="body1-sub2">
+                    <img class="body1-img" alt="illustration" src="https://via.placeholder.com/50"> 
+                    <p class=" subtitle  ">this is some subtext uner a illustration or image</p>
+                </div>
+                <div class="body1-sub2">
+                    <img class="body1-img" alt="illustration" src="https://via.placeholder.com/50"> 
+                    <p class=" subtitle ">this is some subtext uner a illustration or image</p>
+                </div>
+                <div class="body1-sub2">
+                    <img class="body1-img" alt="illustration" src="https://via.placeholder.com/50"> 
+                    <p class=" subtitle">this is some subtext uner a illustration or image</p>
+                </div>
+                <div class="body1-sub2">
+                    <img class="body1-img" alt="illustration" src="https://via.placeholder.com/50"> 
+                    <p class=" subtitle ">this is some subtext uner a illustration or image</p>
+                </div>
+               
+            </div>
+        </div>
+        <div class="body2 borders-space">
+            <p class="body2-text">Whether you think you can or you think you can’t, you’re right</p>
+            <p class="body2-firm">-Henry Ford</p>
+        </div>
+        <div class="body3 borders-space ">
+            <div  class="body3-box">
+                <div class="body3-color">
+                    <label class="body3-title">Call to action! It's time</label>
+                    <p class="body3-subtitle"> Sign up for our product by clicking that button right over there! </p>
+                </div>
+                <button class="subtitle button2" >Sign up</button>
+            </div>
+        </div>

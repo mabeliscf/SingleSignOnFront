@@ -8,7 +8,6 @@ import {debounceTime, delay, switchMap, tap} from 'rxjs/operators';
 import {SortColumn, SortDirection} from './sortabledb.directive';
 import { Database } from '../Models/response/Database';
 import { HttpServiceService } from '../Service/http-service.service';
-import { COUNTRIES } from './Country';
 
 interface SearchResult {
   databases: Database[];
@@ -52,6 +51,8 @@ export class TableDBService {
   private _databases$ = new BehaviorSubject<Database[]>([]);
   private _total$ = new BehaviorSubject<number>(0);
 
+
+  public databaselist : Database[]=[];
   private _state: State = {
     page: 1,
     pageSize: 10,
@@ -61,19 +62,8 @@ export class TableDBService {
   };
 
   constructor(private service :HttpServiceService,  private pipe: DecimalPipe) {
+    this.getDataReload();
    
-    this._search$.pipe(
-      tap(() => this._loading$.next(true)),
-      debounceTime(200),
-      switchMap(() => this._search()),
-      delay(200),
-      tap(() => this._loading$.next(false))
-    ).subscribe(result => {
-      this._databases$.next(result.databases);
-      this._total$.next(result.total);
-    });
-
-    this._search$.next();
   }
 
   get databases$() { return this._databases$.asObservable(); }
@@ -98,11 +88,10 @@ export class TableDBService {
     const {sortColumn, sortDirection, pageSize, page, searchTerm} = this._state;
 
     //get all
-   // let databaseList : Database[]=[];
-    // this.service.getAllDB().subscribe((data: Database[]) => {console.log(data); databaseList= {...data}});
+   
     // 1. sort
 
-    let databases = sort(COUNTRIES, sortColumn, sortDirection);
+    let databases = sort(this.databaselist, sortColumn, sortDirection);
 
     // 2. filter
     databases = databases.filter(database => matches(database, searchTerm, this.pipe));
@@ -114,6 +103,26 @@ export class TableDBService {
   }
 
 
+  getDataReload(){
+    this.service.getAllDB().toPromise().then(data=>  {
+      console.log(data);
+      this.databaselist= data;
+
+      })
+   
+    this._search$.pipe(
+      tap(() => this._loading$.next(true)),
+      debounceTime(200),
+      switchMap(() => this._search()),
+      delay(200),
+      tap(() => this._loading$.next(false))
+    ).subscribe(result => {
+      this._databases$.next(result.databases);
+      this._total$.next(result.total);
+    });
+
+    this._search$.next();
+  }
 
 
 

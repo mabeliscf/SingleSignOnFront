@@ -7,11 +7,25 @@ import { TenantInfo } from '../Models/response/TenantInfo';
 })
 export class UserService {
 
-  private userUpdate$ = new BehaviorSubject<TenantInfo>({});
+  private userUpdate$ = new BehaviorSubject<TenantInfo>({
+    roles: [],
+    database: [],
+    users: [],
+    id: 0,
+    firstName: '',
+    lastName: '',
+    loginType: 0,
+    isTenant: false,
+    isUser: false,
+    tenantFather: 0,
+    email: '',
+    phone: '',
+    username: '',
+    isAdmin: false
+  });
   selectedUserUpdate$ = this.userUpdate$.asObservable();
 
   constructor() { }
-
 
 
   setUserUpdate(user : TenantInfo){

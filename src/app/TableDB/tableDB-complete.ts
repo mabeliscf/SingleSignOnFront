@@ -1,7 +1,7 @@
 import {DecimalPipe} from '@angular/common';
-import {Component, Output, QueryList, ViewChildren, EventEmitter} from '@angular/core';
+import {Component, Output, QueryList, ViewChildren, EventEmitter, Input} from '@angular/core';
 import { Data } from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import { Database } from '../Models/response/Database';
 
 import {NgbdSorDBtableHeader, SortEvent} from './sortabledb.directive';
@@ -19,6 +19,7 @@ export class NgbdTableDBComplete {
 
     @Output() deleteDB : EventEmitter<Database> = new EventEmitter();
     @Output() updateDB : EventEmitter<Database>  =new EventEmitter();
+    @Input() resetDB : Observable<boolean> = new Subject<boolean>();
 
 
   databases$: Observable<Database[]>;
@@ -31,6 +32,15 @@ export class NgbdTableDBComplete {
     this.databases$ = service.databases$;
     this.total$ = service.total$;
   }
+  ngOnInit(){
+    this.resetDB.subscribe(response => {
+      if(response){
+        this.service.getDataReload();
+   
+    }
+   });
+  }
+
 
   onSort({column, direction}: SortEvent) {
     // resetting other headers

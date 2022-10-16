@@ -1,7 +1,7 @@
 import {DecimalPipe} from '@angular/common';
-import {Component, Output, QueryList, ViewChildren, EventEmitter} from '@angular/core';
+import {Component, Output, QueryList, ViewChildren, EventEmitter, Input} from '@angular/core';
 import { Data } from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import { Roles } from '../Models/response/Roles';
 
 import {NgbdSorRoletableHeader, SortEvent} from './sortableroles.directive';
@@ -15,9 +15,9 @@ import { TableRolesService } from './tableRoles.service';
     )
 export class NgbdTableRolesComplete {
 
-
     @Output() deleteRole : EventEmitter<Roles> = new EventEmitter();
     @Output() updateRole : EventEmitter<Roles>  =new EventEmitter();
+    @Input() resetFormSubject : Observable<boolean> = new Subject<boolean>();
 
 
   roles$: Observable<Roles[]>;
@@ -27,9 +27,25 @@ export class NgbdTableRolesComplete {
     headers!: QueryList<NgbdSorRoletableHeader>;
 
   constructor(public service: TableRolesService) {
+    
     this.roles$ = service.roles$;
     this.total$ = service.total$;
+
+
+    
   }
+
+  ngOnInit(){
+    this.resetFormSubject.subscribe(response => {
+      if(response){
+        this.service.getDataReload();
+   
+    }
+   });
+  }
+
+
+
 
   onSort({column, direction}: SortEvent) {
     // resetting other headers

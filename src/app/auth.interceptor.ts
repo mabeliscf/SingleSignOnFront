@@ -11,12 +11,13 @@ import { OKTA_AUTH } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
 import { HttpServiceService } from './Service/http-service.service';
 import { environment } from 'src/environments/environment';
+import { AuthService } from './Service/auth.service';
 
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(@Inject(OKTA_AUTH) private _oktaAuth: OktaAuth, private service : HttpServiceService) {}
+  constructor(@Inject(OKTA_AUTH) private _oktaAuth: OktaAuth, private service : HttpServiceService, private auth : AuthService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(this.addAuthHeaderToAllowedOrigins(request));
@@ -29,6 +30,7 @@ export class AuthInterceptor implements HttpInterceptor {
     //allow everything from same origin  it can be fix to allow a specific oring
     if (!!allowedOrigins.find(origin => request.url.includes(origin.split(":")[0]))) {
       //use jwt token to navigate
+     if( !this.auth.isLoggedIn()){ this.auth.logout() };
       const jwttoken = localStorage.getItem("id_token");
      
       const authToken = jwttoken==null?  this._oktaAuth.getAccessToken() :   jwttoken  ;

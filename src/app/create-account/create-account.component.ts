@@ -2,12 +2,12 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup,FormBuilder, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegisterDTO } from '../Models/request/RegisterDTO';
-import { Tenant } from '../Models/Tenant';
 import { HttpServiceService } from '../Service/http-service.service';
 import { Validators } from '@angular/forms';
 import {NgbAlertConfig} from '@ng-bootstrap/ng-bootstrap';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { GlobalResponse } from '../Models/response/GlobalResponse';
 
 @Component({
   selector: 'app-create-account',
@@ -67,10 +67,11 @@ lastname = new FormControl(null, [
 
     ///create user local and in okta 
     let register : RegisterDTO ={ 
+      id:0,
       firstName: this.CreateAccountForm.controls["name"].value,
       lastname:this.CreateAccountForm.controls["lastname"].value,
       email: this.CreateAccountForm.controls["email"].value,
-      username: this.CreateAccountForm.controls["email"].value, //login or username
+      username:  this.CreateAccountForm.controls["email"].value, //login or username
       phone: this.CreateAccountForm.controls["phone"].value,
       password: this.CreateAccountForm.controls["password"].value,
       logintype : 0,
@@ -83,9 +84,9 @@ lastname = new FormControl(null, [
       //request to create user 
       this.service.registerUser(register)
       .pipe( catchError( e=> throwError( this.HandleError(e.error)) ))
-      .subscribe((data: Tenant)=> {
+      .subscribe((data: GlobalResponse)=> {
         console.log(data);
-        if(data!=null && data.username == register.username){
+        if(data.responseNumber==1){
           //once created give access to welcome page 
           //user created, ask to go login 
           this.isCreated=true;

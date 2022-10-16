@@ -17,7 +17,7 @@
       <th scope="col" sortableDB="serverName" (sortDB)="onSort($event)">Server Name</th>
       <th scope="col" sortableDB="serverRoute" (sortDB)="onSort($event)">Server Route</th>
       <th scope="col">Edit</th>
-      <th scope="col">Delete</th>
+      <!-- <th scope="col">Delete</th> -->
 
 
 
@@ -31,7 +31,7 @@
       <td><ngb-highlight [result]="database.serverName" [term]="service.searchTerm"></ngb-highlight></td>
       <td><ngb-highlight [result]="database.serverRoute" [term]="service.searchTerm"></ngb-highlight></td>
       <td><button type="button" (click)="update(database)" class="btn btn-light">Editar</button></td>
-      <td> <button type="button" (click)="delete(database)" class="btn btn-warning">Delete</button></td>
+      <!-- <td> <button type="button" (click)="delete(database)" class="btn btn-warning">Delete</button></td> -->
     </tr>
     </tbody>
   </table>

@@ -4,7 +4,6 @@ import { Database } from '../Models/response/Database';
 import { Roles } from '../Models/response/Roles';
 import { TenantInfo } from '../Models/response/TenantInfo';
 import { UsersInfo } from '../Models/response/UsersInfo';
-import { TENANTINFOTEST } from '../register-user/TENANTINFOTEST';
 import { HttpServiceService } from '../Service/http-service.service';
 import { UserService } from '../Service/user.service';
 
@@ -21,11 +20,16 @@ export class UsersComponent implements OnInit {
     roles: [],
     databases: [],
     id: 0,
-    fullname: '',
     email: '',
     phone: '',
     username: '',
-    isAdmin: false
+    isAdmin: false,
+    firstName: '',
+    lastName: '',
+    loginType: 0,
+    isTenant: false,
+    isUser: false,
+    tenantFather: 0
   };
   usersinfo: UsersInfo[]=[];
   roles: Roles[]=[];
@@ -37,21 +41,8 @@ export class UsersComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // //get by id 
-    // let iduser: Number = 1;
-    // this.service.getUserbyID(iduser).subscribe((data: UsersInfo) => {console.log(data); this.userinfo = {
-    //   ...data
-
-    // }});
- 
-    // this.service.getUsersbyTenant(iduser).subscribe((data: UsersInfo[]) => {console.log(data); this.usersinfo = {
-    //   ...data
-
-    // }});
-
     // //si es administrador 
     //this.service.getAllTenants().subscribe((data: TenantInfo[]) => {console.log(data); this.tenantinfo = {  ...data }});
-   this.tenantinfo =  TENANTINFOTEST;
   }
 
   editUserRequest(data: TenantInfo){
@@ -72,5 +63,10 @@ export class UsersComponent implements OnInit {
     this.database=data.database;
 
 
+  }
+  Create(){
+    //redirect to create user 
+    this.router.navigate(["/z/register"]);
+  
   }
 }

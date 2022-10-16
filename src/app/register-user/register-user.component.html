@@ -1,11 +1,12 @@
+
+<ngb-alert *ngIf="isError"  >{{errorMessage}}</ngb-alert>
 <div class="row d-flex justify-content-center">
     <div class="col-md-6">
-        <ngb-alert *ngIf="isCreated"  >Account Created!  Please  <a style="color: blue ;" href="/login" >Log in</a></ngb-alert>
-        <ngb-alert *ngIf="isError"  >{{errorMessage}}</ngb-alert>
+       
         <div class="card" *ngIf="!isCreated"  >
             <div class="card-body">
                 <h5 class="card-title text-center">{{action}} User</h5>
-                <form [formGroup]="RegisterUserForm" (ngSubmit)="CreateUser()">
+                <form [formGroup]="RegisterUserForm" (ngSubmit)="RegisterUser()">
                     <!--First NAme -->
                     <div class="form-group">
                       <label for="name">First Name </label>
@@ -78,23 +79,14 @@
                         </div>
                     </div>
 
-                    <!--login type-->
-                    <div class="form-group">
-                        <label for="logintype">Select Login type</label>
-                        <select id="logintype" formControlName="loginType" class="custom-select" (change)="changeLogintype($event)" >
-                            <option selected [ngValue]="0">Open this select menu</option>
-                            <option value="1" [ngValue]="1">Local Login</option>
-                            <option value="2" [ngValue]="2">Okta</option>
-                          </select>
-                    </div>
                      <!--tenant or user-->
                      <div  class="form-group">
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input (click)="tenantSelected()" formControlName="isTenant" type="radio" id="isTenant" name="isTenant" class="custom-control-input">
+                            <input (click)="tenantSelected()" formControlName="isTenant" type="radio"  id="isTenant" name="isTenant" value="tenant" class="custom-control-input">
                             <label class="custom-control-label" for="isTenant">Tenant</label>
                           </div>
                           <div class="custom-control custom-radio custom-control-inline">
-                            <input (click)="userSelected()" formControlName="isUser" type="radio" id="isUser" name="isUser" class="custom-control-input">
+                            <input (click)="userSelected()" formControlName="isUser" type="radio" id="isUser"  name="isUser" value="user" class="custom-control-input">
                             <label class="custom-control-label" for="isUser">User</label>
                           </div>
                      </div>
@@ -104,9 +96,19 @@
                         <label for="idTenantFather">Select a Tenant </label>
                         <select (change)="selectTenant($event)" id="idTenantFather" formControlName="idTenantFather" class="custom-select">
                             <option selected [ngValue]="0">Open this select menu</option>
-                            <option *ngFor="let tenant of tenantsData" [ngValue]="tenant.id">  {{ tenant.fullname }}  </option>
+                            <option *ngFor="let tenant of tenantsData" [ngValue]="tenant.id">  {{ tenant.firstName }}  {{tenant.lastName}}  </option>
                           </select>
                      </div>
+                     
+                    <!--login type-->
+                    <div  *ngIf="!isUserSelected" class="form-group">
+                      <label for="logintype">Select Login type</label>
+                      <select id="logintype" formControlName="loginType" class="custom-select" (change)="changeLogintype($event)" >
+                          <option selected [ngValue]="0">Open this select menu</option>
+                          <option value="1" [ngValue]="1">Local Login</option>
+                          <option value="2" [ngValue]="2">Okta</option>
+                        </select>
+                    </div>
 
                     <!--database and roles are shown depending of what is select if user, we picked tenant role and db, if tenant - roles and db in general are shown-->
                     <!--database --> <!---if user selected hide databasee -->

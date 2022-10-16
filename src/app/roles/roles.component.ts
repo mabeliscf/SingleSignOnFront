@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbAlertConfig } from '@ng-bootstrap/ng-bootstrap';
-import { throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { RoleDTO } from '../Models/request/RoleDTO';
 import { Roles } from '../Models/response/Roles';
@@ -18,6 +18,7 @@ export class RolesComponent implements OnInit {
 
   roles: Roles[] | undefined;
   role : Roles ={idRole:0, roleDescription:"", roleFather:0};
+  resetFormSubject1: Subject<boolean> = new Subject<boolean>();
 
   public showAlert: boolean =false;
   public message:string="";
@@ -45,7 +46,7 @@ export class RolesComponent implements OnInit {
 
   CreateRoles(){
 
-    let role : Roles= {
+    let role : RoleDTO= {
       roleDescription: this.CreateRoleFrom.controls["roleDescription"].value,
       idRole:this.role.idRole,
       roleFather: this.role.roleFather
@@ -60,25 +61,28 @@ export class RolesComponent implements OnInit {
           this.showAlert=true;
           this.success(this.action + " sucessfull");
           this.clearform();
+          this.resetChildForm1();
+
         }
       });
 
     }else {
       this.service.createRole(role)
       .pipe(catchError(e=> throwError( this.error( e.error)  )))
-      .subscribe((result: boolean)=> {
-        if(result){
+      .subscribe((result: number)=> {
+        if(result>0){
           this.showAlert=true;
           this.success(this.action + " sucessfull");
           //clean forms 
           this.clearform();
+          this.resetChildForm1();
         }
       });
     }
   }
 
 
-  updateRoleRequest(roles: Roles){
+  updateRoleRequest(roles: RoleDTO){
     this.action="Update";
     console.log(roles);
     this.role= roles;
@@ -86,7 +90,7 @@ export class RolesComponent implements OnInit {
      this.CreateRoleFrom.controls["roleDescription"].setValue(this.role.roleDescription);
   }
 
-  deleteRoleRequest(roles: Roles){
+  deleteRoleRequest(roles: RoleDTO){
     console.log(roles);
     this.service.deleteRole(roles)
     .pipe(catchError(e=> throwError( this.error( e.error)  )))
@@ -99,12 +103,17 @@ export class RolesComponent implements OnInit {
   clearform(){
     this.action="Create";
     this.CreateRoleFrom.reset();
+    this.role= {idRole:0, roleDescription:"", roleFather:0};
+
+
   }
 
   success(message:string){
         this.alertConfig.type="success";
         this.message = message;
         this.alertConfig.dismissible= false;
+        //refresh table 
+        this.ngOnInit();
   }
 
   error(error:string){
@@ -112,5 +121,8 @@ export class RolesComponent implements OnInit {
     this.message = error;
     this.alertConfig.dismissible= false;
   }
-  
+
+resetChildForm1(){
+   this.resetFormSubject1.next(true);
+}
 }

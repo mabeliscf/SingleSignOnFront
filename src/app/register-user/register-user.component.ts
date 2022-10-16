@@ -1,32 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbAlertConfig } from '@ng-bootstrap/ng-bootstrap';
-import { register } from '@okta/okta-auth-js';
-import { cleanOAuthResponseFromUrl } from '@okta/okta-auth-js/types/lib/oidc/parseFromUrl';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { isJSDocThisTag } from 'typescript';
 import { DbAccess } from '../Models/DbAccess';
-import { RegisterDTO } from '../Models/request/RegisterDTO';
 import { RegisterUserDTO } from '../Models/request/RegisterUserDTO';
 import { Database } from '../Models/response/Database';
 import { GlobalResponse } from '../Models/response/GlobalResponse';
 import { Roles } from '../Models/response/Roles';
 import { TenantInfo } from '../Models/response/TenantInfo';
-import { Tenant } from '../Models/Tenant';
 import { TenantRole } from '../Models/TenantRole';
 import { HttpServiceService } from '../Service/http-service.service';
 import { UserService } from '../Service/user.service';
-import { COUNTRIES } from '../TableDB/Country';
-import { ROLES } from '../TableRoles/ROLES';
-import { TENANTINFOTEST } from './TENANTINFOTEST';
 
 @Component({
   selector: 'app-register-user',
   templateUrl: './register-user.component.html',
   styleUrls: ['./register-user.component.css']
 })
-export class RegisterUserComponent implements OnInit {
+export class RegisterUserComponent implements OnInit, AfterViewInit {
   
   public isCreated: boolean =false;
   public isError : boolean =false;
@@ -39,9 +33,11 @@ export class RegisterUserComponent implements OnInit {
   rolesData: Roles[] | undefined;
   databasesData: Database[] | undefined;
   tenantsData: TenantInfo[] | undefined;
+  tenantUpdate : TenantInfo| undefined;
   
 
-
+  @ViewChild('tenant', { static: false }) tenantRadio: ElementRef | undefined;
+  
   password = new FormControl(null, [
     (c: AbstractControl) => Validators.required(c),
     Validators.pattern(
@@ -97,47 +93,62 @@ lastname = new FormControl(null, [
 
     this.action="Create";
 
-    //verify is is a update 
-    this.userService.selectedUserUpdate$.subscribe((data: TenantInfo)=> {console.log(data); 
-    //todo : fill form with data to update
-    })
     
     // //get all get Al DB
-    // this.service.getAllDB().subscribe((data: Database[]) => {console.log(data); this.databasesData= {
-    //   ...data
-
-    // }});
+    this.service.getAllDB().toPromise().then((data: Database[]) => {console.log(data); this.databasesData= data});
 
     // //get all Roles
-    // this.service.getAllRole().subscribe((data: Roles[]) => {console.log(data); this.rolesData= {
-    //   ...data
-
-    // }});
+    this.service.getAllRole().toPromise().then((data: Roles[]) => {console.log(data); this.rolesData=data});
 
     // //Get Al tenants
-    // this.service.getAllTenants()
-    // .pipe(catchError(e=> throwError( this.HandleError( e.error)  )))
-    // .subscribe((data: TenantInfo[])=> {console.log(data);   this.tenantsData =data; });
+    this.service.getAllTenants()
+    .pipe(catchError(e=> throwError( this.HandleError( e.error,"error")  )))
+    .subscribe((data: TenantInfo[])=> {console.log(data);   this.tenantsData =data; });
 
 
-    this.rolesData = ROLES;
-    this.databasesData = COUNTRIES;
-    this.tenantsData= TENANTINFOTEST; 
 
+}
 
-   }
+ngAfterViewInit(){
+
+  
+//verify is is a update 
+this.userService.selectedUserUpdate$.subscribe((data: any)=> {console.log(data); this.tenantUpdate= data;
+  if(data.id!=0){
+    this.action="Update";
+    //fill form with data to update
+    this.RegisterUserForm.controls["name"].setValue(this.tenantUpdate?.firstName );
+    this.RegisterUserForm.controls["lastname"].setValue(this.tenantUpdate?.lastName);
+    this.RegisterUserForm.controls["phone"].setValue(this.tenantUpdate?.phone);
+    this.RegisterUserForm.controls["email"].setValue(this.tenantUpdate?.email);
+    this.RegisterUserForm.controls["password"].setValue("");
+    this.RegisterUserForm.controls["passwordRepeat"].setValue("");
+    this.RegisterUserForm.controls["loginType"].setValue(this.tenantUpdate?.loginType);
+    this.RegisterUserForm.controls["isTenant"].setValue(this.tenantUpdate?.isTenant ==true ? "tenant" : "");
+    this.RegisterUserForm.controls["isUser"].setValue(this.tenantUpdate?.isUser == true ? "user" : "");
+    this.RegisterUserForm.controls["database"].setValue(this.tenantUpdate?.database ?  this.tenantUpdate?.database[0].idDb: 0);
+    this.RegisterUserForm.controls["roles"].setValue(this.tenantUpdate?.roles ? this.tenantUpdate?.roles[0].idRole : 0);
+    this.RegisterUserForm.controls["idTenantFather"].setValue(this.tenantUpdate?.tenantFather);
+    this.isUserSelected=this.tenantUpdate?.isUser || false;
+  }
+});
+   
+
+}
 
  
    //select user 
    userSelected(){
       this.isUserSelected=true;
       this.RegisterUserForm.controls["isTenant"].reset();
+
    }
 
    //select tenant 
    tenantSelected(){
     this.isUserSelected=false;
     this.RegisterUserForm.controls["isUser"].reset();
+
   }
   //login type 
   changeLogintype(select: any)
@@ -146,7 +157,7 @@ lastname = new FormControl(null, [
   }
 
   selectTenant(select : any){
-    this.RegisterUserForm.controls["idTenantFather"].setValue( this.tenantsData?.find(a=> a.fullname==select.target.selectedOptions[0].text)?.id);
+    this.RegisterUserForm.controls["idTenantFather"].setValue( this.tenantsData?.find(a=> select.target.selectedOptions[0].text.includes(a.firstName) && select.target.selectedOptions[0].text.includes(a.lastName))?.id);
   }
   //select database
   changeDB(select: any)
@@ -167,7 +178,7 @@ lastname = new FormControl(null, [
     let getDB:  DbAccess[] =[];
      //get roles and load to model 
      let getrole : TenantRole[]=[];
-    
+    let logintype:number=0;
     if(this.isUserSelected){
 
       let asignDatabases : Database[] | undefined = this.tenantsData?.find(a=> a.id== this.RegisterUserForm.controls["idTenantFather"].value)?.database;
@@ -177,26 +188,29 @@ lastname = new FormControl(null, [
       });
 
       //assgin roles
-      getrole.push({idTenant:this.RegisterUserForm.controls["idTenantFather"].value, idRole:  this.RegisterUserForm.controls["roles"].value ,idTenantRole:0});
+      getrole.push({idTenant:this.tenantUpdate?.id || 0, idRole:  this.RegisterUserForm.controls["roles"].value ,idTenantRole:0});
 
+      logintype = this.tenantsData?.find(a=> this.RegisterUserForm.controls["idTenantFather"].value==a.id)?.loginType || 0;
     }
     if(!this.isUserSelected){
       
-      getDB?.push({idDB: this.RegisterUserForm.controls["database"].value, idDbAccess: 0, idTenant:0});
+      getDB?.push({idDB: this.RegisterUserForm.controls["database"].value, idDbAccess: 0, idTenant:this.tenantUpdate?.id || 0});
       //assgin roles
-      getrole.push({idTenant:0, idRole:  this.RegisterUserForm.controls["roles"].value ,idTenantRole:0});
+      getrole.push({idTenant:this.tenantUpdate?.id || 0, idRole:  this.RegisterUserForm.controls["roles"].value ,idTenantRole:0});
 
+      logintype=this.RegisterUserForm.controls["loginType"].value;
     }
     
     let register : RegisterUserDTO ={ 
+      id: this.tenantUpdate?.id || 0,
       firstName: this.RegisterUserForm.controls["name"].value,
       lastname:this.RegisterUserForm.controls["lastname"].value,
       email: this.RegisterUserForm.controls["email"].value,
       username: this.RegisterUserForm.controls["email"].value, //login or username
       phone: this.RegisterUserForm.controls["phone"].value,
       password: this.RegisterUserForm.controls["password"].value,
-      logintype :this.RegisterUserForm.controls["loginType"].value,
-      isAdmin :false,
+      logintype :logintype,
+      isAdmin :this.tenantUpdate?.isAdmin || false,
       isTenant :!this.isUserSelected,
       isUser :this.isUserSelected,
       databases :getDB,
@@ -205,34 +219,36 @@ lastname = new FormControl(null, [
     };
 
     console.log(register);
+    //add to DB
+    this.CreateUser(register);
     return register;
   }
 
-   //TODO create model and create update model 
-  CreateUser(){
-      let dataRequest =  this.RegisterUser();
+   
+  CreateUser( dataRequest: RegisterUserDTO){
 
-      //request to create user 
-      this.service.registerUser(dataRequest)
-      .pipe( catchError( e=> throwError( this.HandleError(e.error)) ))
-      .subscribe((data: Tenant)=> {
+
+      //request to create user or update 
+      this.service.createUsers(dataRequest)
+      .pipe( catchError( e=> throwError( this.HandleError(e.error,"error")) ))
+      .subscribe((data: any)=> {
         console.log(data);
-        if(data!=null && data.username == dataRequest.username){
+        if(data.responseNumber==1){
           //once created give access to welcome page 
           //user created, ask to go login 
-          this.isCreated=true;
-          this.alertConfig.type="success";
-          this.alertConfig.dismissible=false;
+         this.HandleError(data.response,'success');
+
+         
           this.clearform();
         }else {
-         this.HandleError("Error Creating user");
+         this.HandleError("Error Creating user",'error');
         }
       });
   }
 
   clearform(){
-    this.isError=false;
-    this.isCreated= false;
+    
+    this.action="Create";
     this.RegisterUserForm.reset();
   }
 
@@ -254,11 +270,10 @@ lastname = new FormControl(null, [
     };
   }
 
-  HandleError(error: string){
-    this.isCreated=false;
+  HandleError(error: string, ype:string){
     this.isError= true;
-    this.errorMessage = error
-    this.alertConfig.type="danger"
+    this.errorMessage = error;
+    this.alertConfig.type=ype;
     this.alertConfig.dismissible=true;
 
   }

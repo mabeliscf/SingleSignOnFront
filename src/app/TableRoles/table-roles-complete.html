@@ -12,10 +12,10 @@
     <thead>
     <tr>
       <th scope="col">Id</th>
-      <th scope="col" sortableR="roleDescription" (sortRole)="onSort($event)">Role Name</th>
-      <th scope="col" sortableR="roleFather" (sortRole)="onSort($event)">Role Description</th>
+      <th scope="col" sortableR="roleDescription" (sortRole)="onSort($event)">Role Description</th>
+      <!-- <th scope="col" sortableR="roleFather" (sortRole)="onSort($event)">Role Description</th> -->
       <th scope="col">Edit</th>
-      <th scope="col">Delete</th>
+      <!-- <th scope="col">Delete</th> -->
 
 
 
@@ -25,9 +25,9 @@
     <tr *ngFor="let role of roles$ | async">
       <th scope="row">{{ role.idRole }}</th>
       <td> <ngb-highlight [result]="role.roleDescription" [term]="service.searchTerm"></ngb-highlight> </td>
-      <td><ngb-highlight [result]="role.roleFather | number" [term]="service.searchTerm"></ngb-highlight></td>
+      <!-- <td><ngb-highlight [result]="role.roleFather | number" [term]="service.searchTerm"></ngb-highlight></td> -->
       <td><button type="button" (click)="update(role)" class="btn btn-light">Editar</button></td>
-      <td> <button type="button" (click)="delete(role)" class="btn btn-warning">Delete</button></td>
+      <!-- <td> <button type="button" (click)="delete(role)" class="btn btn-warning">Delete</button></td> -->
     </tr>
     </tbody>
   </table>

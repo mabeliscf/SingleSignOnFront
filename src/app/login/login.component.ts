@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject,  OnInit } from '@angular/core';
 import { HttpServiceService } from '../Service/http-service.service';
 import { Router } from '@angular/router';
 import { OktaAuthStateService, OKTA_AUTH } from '@okta/okta-angular';
@@ -8,8 +8,8 @@ import { map, filter, catchError } from 'rxjs/operators';
 import {  LoginDTO } from '../Models/request/LoginDTO';
 import { UserLogged } from '../Models/response/UserLogged';
 import { AuthService } from '../Service/auth.service';
-import { OktaUserinfo } from '../Models/response/OktaUserinfo';
 import { NgbAlertConfig } from '@ng-bootstrap/ng-bootstrap';
+import { OktaUserinfo } from '../Models/response/OktaUserinfo';
 
 
 @Component({
@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
   public isLoggedIn$: Observable<boolean> | undefined;
   public isAuthenticated$!: Observable<boolean>;
   public user : UserLogged={username: '', fullName: "", expiresIn:0, token:"", id:0} ;
- 
+  public name$!: Observable<string>;
   public ErrorLogin: string="";
   public isError: boolean=false;
 
@@ -40,7 +40,10 @@ export class LoginComponent implements OnInit {
 
    ngOnInit() {
        //validate if theres any admin root 
-       this.service.isAdminCreated().subscribe((data: boolean)=> this.showCreateAccount =data);
+       this.service.isAdminCreated().toPromise().then((data: boolean)=> {
+         this.showCreateAccount =data;
+       });
+       
        
        
        //validate if user is  save in local storage and save it
@@ -54,21 +57,27 @@ export class LoginComponent implements OnInit {
        );
       
    
-       //check if user is logged 
-       if(!autOkta ||  this.isLoggedIn$ ){
-        //  //validate if token exist
-        //  if(localStorage.getItem("id_token")==null){
-        //     //get data from db and generate a new token 
-        //     this.service.getUserToken(7)
-        //     .subscribe(a => {
-        //       if (a != undefined) {
-        //         //save login and token  
-        //         this.user.token= a.token;  this.user.expiresIn= a.expiresIn;  console.log(this.user);
-        //         this.auth.login(this.user);
-             
-        //       }
-        //     });
-        //  }
+       //check if user is logged in okta but no in local storage, go and save local storage
+       if(autOkta ||  !this.isLoggedIn$ ){
+        //get okta user id
+        this.name$ = this._oktaAuthStateService.authState$.pipe(
+          filter((authState: AuthState) => !!authState && !!authState.isAuthenticated),
+          map((authState: AuthState) => authState.idToken?.claims.name ?? '')
+        );
+     
+            //get data from db and generate a new token 
+            this.service.getOktaUserInfo().subscribe((data : OktaUserinfo)=> {console.log(data); this.user.username= data.nickname; this.user.fullName= data.name; this.user.id= 7 });
+
+            this.service.getUserToken(this.user.id)
+              .subscribe(a => {
+                if (a != undefined) {
+                  //save login and token 
+                  this.user.token= a.token;   this.user.expiresIn= a.expiresIn;  console.log(this.user);
+                  //save user data in local storage 
+                  this.auth.login(this.user);
+                }
+              });
+      
          //redirect to welcome page 
          this._router.navigate(['/z/welcome']);
       }

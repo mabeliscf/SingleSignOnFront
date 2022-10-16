@@ -21,9 +21,9 @@ export class NavbarComponent implements OnInit {
   isLoggedIn$: Observable<boolean> | undefined;
   public isAuthenticated$!: Observable<boolean>;
   public name$!: Observable<string>;
-
   public isError : boolean =false;
   public errorMessage : string ="";
+  public space :string ="";
 
   public user : UserLogged={username: '', fullName: "", expiresIn:0, token:"", id:0} ;
 
@@ -32,10 +32,15 @@ export class NavbarComponent implements OnInit {
     roles: [],
     databases: [],
     id: 0,
-    fullname: 'Raemil Corniel',
-    email: 'raemilcorniel@hotmail.com',
-    phone: '8293550691',
-    username: 'raemilcorniel@hotmail.com',
+    firstName : "" ,
+    lastName : "",
+    isTenant:true,
+    isUser:false,
+    loginType:1,
+    tenantFather:0,
+    email: '',
+    phone: '',
+    username: '',
     isAdmin: false
   };
 
@@ -69,7 +74,7 @@ export class NavbarComponent implements OnInit {
         .subscribe(a => {
           if (a != undefined) {
             //save login and token 
-            this.user.token= a.token;   this.user.expiresIn= 111111111111111111111;  console.log(this.user);
+            this.user.token= a.token;   this.user.expiresIn= a.expiresIn;  console.log(this.user);
             //save user data in local storage 
             this.auth.login(this.user);
           }
@@ -80,11 +85,23 @@ export class NavbarComponent implements OnInit {
     if(this.isLoggedIn$ ){
       //get id from local storage
       this.userData.id = Number(localStorage.getItem("iduser")?.toString() ) ;
+     
   
       ///get data of user, to show in navbar 
       this.service.getUserbyID(this.userData.id)
       .pipe( catchError( e=> throwError( this.HandleError(e.error)) ))
-      .subscribe((data: UsersInfo)=> {console.log(data); this.userData=data});
+      .subscribe((data: UsersInfo)=> {console.log(data); 
+        
+        //todo get space name no id 
+        this.userData=data;
+        if(data.isAdmin){
+          this.space= "Admin";
+        }else {
+          this.space= "Space--> " + this.userData.tenantFather;
+
+        }
+      
+      });
 
     }
   }
@@ -103,7 +120,7 @@ export class NavbarComponent implements OnInit {
 
   HandleError(error: string){
     
-    this.isError= true;
+    this.isError= false;
     this.errorMessage = error
     this.alertConfig.type="danger"
     this.alertConfig.dismissible=true;

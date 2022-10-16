@@ -34,39 +34,26 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
   async ngOnInit(): Promise<void> {
     this.isLoggedIn$ = this.auth.isUserLoggedIn;
 
-    this.name$ = this._oktaAuthStateService.authState$.pipe(
-      filter((authState: AuthState) => !!authState && !!authState.isAuthenticated),
-      map((authState: AuthState) => authState.idToken?.claims.name ?? '')
-    );
+    // this.name$ = this._oktaAuthStateService.authState$.pipe(
+    //   filter((authState: AuthState) => !!authState && !!authState.isAuthenticated),
+    //   map((authState: AuthState) => authState.idToken?.claims.name ?? '')
+    // );
 
-    console.log(this.name$);
+    // console.log(this.name$);
 
-    //  //get user info from local db
-    // if(this.name$!=undefined){
-
-    //   //get okta user info 
-    //   this.service.getOktaUserInfo().subscribe((data : OktaUserinfo)=> console.log(data));
-
-      this.service.getUserToken(7)
-        .subscribe(a => {
-          if (a != undefined) {
-            console.log("sso -->" + a.token);
-            //save login and token 
-            this.auth.login(a);
-          }
-        });
-   //  }
+    //   this.service.getUserToken(7)
+    //     .subscribe(a => {
+    //       if (a != undefined) {
+    //         console.log("sso -->" + a.token);
+    //         //save login and token 
+    //         this.auth.login(a);
+    //       }
+    //     });
+   
   }
 
   ngAfterViewInit(): void {
 
-    //show roles have access
-    this.roles.push({ idRole: 1, roleDescription: "ROL 1",  roleFather: 0 });
-    this.roles.push({ idRole: 2, roleDescription: "ROL 2",  roleFather: 0 });
-    this.roles.push({ idRole: 3, roleDescription: "ROL 3",  roleFather: 0 });
-
-    //si es administrador 
-    this.service.getAllTenants().subscribe((data: TenantInfo[]) => {console.log(data); this.tenantinfo = { ...data }});
   }
 
 

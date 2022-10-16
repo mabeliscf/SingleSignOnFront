@@ -1,6 +1,11 @@
 export interface UsersBasic{
     id: number,
-    fullname : string ,
+    firstName : string ,
+    lastName : string ,
+    loginType : number,
+    isTenant : boolean,
+    isUser : boolean,
+    tenantFather :number,
     email: string ,
     phone: string ,
     username: string ,

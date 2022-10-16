@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbAlertConfig } from '@ng-bootstrap/ng-bootstrap';
-import { throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { DatabaseDTO } from '../Models/request/DatabaseDTO';
 import { Database } from '../Models/response/Database';
@@ -15,11 +15,9 @@ import { HttpServiceService } from '../Service/http-service.service';
 })
 export class DatabaseComponent implements OnInit {
 
-
-
-
   databases: Database[] | undefined;
   database : Database = {idDb:0, dbName:"", dbSchema: "", serverName: "" , serverRoute: ""};
+  resetDB1: Subject<boolean> = new Subject<boolean>();
 
 
   public showAlert: boolean =false;
@@ -28,7 +26,6 @@ export class DatabaseComponent implements OnInit {
   public action:string="Create";
 
   public idDB: number=0;
-
 
 
   dbName = new FormControl(null, [ (c: AbstractControl)=> Validators.required(c)]);
@@ -70,6 +67,8 @@ export class DatabaseComponent implements OnInit {
           this.showAlert=true;
           this.success(this.action +  "  Succesfull");
           this.clearform();
+          this.resetDB();
+
         }
        
       });
@@ -77,11 +76,12 @@ export class DatabaseComponent implements OnInit {
     }else {//create
       this.service.createDB(db)
       .pipe(catchError(e=> throwError( this.error( e.error)  )))
-      .subscribe((result: boolean)=> {
-        if(result){
+      .subscribe((result: number)=> {
+        if(result>0){
           this.showAlert=true;
           this.success(this.action +" Succesfull");
           this.clearform();
+          this.resetDB();
         }
       });
     }
@@ -102,7 +102,7 @@ export class DatabaseComponent implements OnInit {
 
   }
 
-  deleteDBRequest(database: Database){
+  deleteDBRequest(database: DatabaseDTO){
 
     console.log(database);
     this.service.deleteDB(database)
@@ -117,9 +117,10 @@ export class DatabaseComponent implements OnInit {
  clearform(){
     this.action="Create";
     this.CreateDBFrom.reset();
+    this.showAlert=false;
+    this.database=   {idDb:0, dbName:"", dbSchema: "", serverName: "" , serverRoute: ""};
+
   }
-
-
 
   success(message:string){
         this.alertConfig.type="success";
@@ -134,5 +135,7 @@ export class DatabaseComponent implements OnInit {
   }
   
   
-
+  resetDB(): void{
+    this.resetDB1.next(true);
+ }
 }

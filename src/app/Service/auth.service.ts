@@ -77,6 +77,7 @@ logout() {
 
 public isLoggedIn() {
   this.loggedin.next(moment().isBefore(this.getExpiration()));
+  console.log(moment().isBefore(this.getExpiration()));
     return moment().isBefore(this.getExpiration());
 }
 

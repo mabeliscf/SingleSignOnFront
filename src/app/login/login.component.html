@@ -6,8 +6,8 @@
                 <h5 class="card-title text-center">Login</h5>
                 <form>
                     <div class="form-group">
-                      <label for="username">Username</label>
-                      <input type="text" (click)="cleanError()" class="form-control" id="username" [(ngModel)]="login1.userName"  [ngModelOptions]="{standalone: true}" placeholder="Enter Username">
+                      <label for="username">Email</label>
+                      <input type="text" (click)="cleanError()" class="form-control" id="username" [(ngModel)]="login1.userName"  [ngModelOptions]="{standalone: true}" placeholder="Enter Email">
                     </div>
                     <div class="form-group">
                       <label for="password">Password</label>
@@ -33,7 +33,7 @@
                     <button (click)="signOutOkta()">Sign out</button>
                   </ng-template>
                   </div>
-                <div class="text-left" *ngIf="showCreateAccount">
+                <div class="text-left" *ngIf="!showCreateAccount">
                     <p>Don't have an account <a   class="links" (click)="CreateAccount()" > Create one here!</a></p>
                 </div>
           </div>

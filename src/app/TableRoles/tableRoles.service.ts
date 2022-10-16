@@ -6,7 +6,6 @@ import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import { debounceTime, delay, switchMap, tap } from "rxjs/operators";
 import { Roles } from "../Models/response/Roles";
 import { HttpServiceService } from "../Service/http-service.service";
-import { ROLES } from "./ROLES";
 import { SortColumn, SortDirection } from "./sortableroles.directive";
 
 
@@ -50,6 +49,7 @@ export class TableRolesService {
   private _roles$ = new BehaviorSubject<Roles[]>([]);
   private _total$ = new BehaviorSubject<number>(0);
 
+  public roleslist :Roles[]=[];
   private _state: State = {
     page: 1,
     pageSize: 10,
@@ -59,19 +59,7 @@ export class TableRolesService {
   };
 
   constructor(private service :HttpServiceService,  private pipe: DecimalPipe) {
-   
-    this._search$.pipe(
-      tap(() => this._loading$.next(true)),
-      debounceTime(200),
-      switchMap(() => this._search()),
-      delay(200),
-      tap(() => this._loading$.next(false))
-    ).subscribe(result => {
-      this._roles$.next(result.roles);
-      this._total$.next(result.total);
-    });
-
-    this._search$.next();
+    this.getDataReload();
   }
 
   get roles$() { return this._roles$.asObservable(); }
@@ -95,12 +83,10 @@ export class TableRolesService {
   private _search(): Observable<SearchResult> {
     const {sortColumn, sortDirection, pageSize, page, searchTerm} = this._state;
 
-    //get all
-   let rolesList : Roles[]=[];
-    this.service.getAllRole().subscribe((data: Roles[]) => {console.log(data); rolesList= {...data}});
+    
     // 1. sort
 
-    let roles = sort(ROLES, sortColumn, sortDirection);
+    let roles = sort(this.roleslist, sortColumn, sortDirection);
 
     // 2. filter
     roles = roles.filter(role => matches(role, searchTerm, this.pipe));
@@ -111,6 +97,24 @@ export class TableRolesService {
     return of({roles, total});
   }
 
+  getDataReload(){
+    this.service.getAllRole().toPromise().then(data=>  {
+      this.roleslist= data;
+
+      });
+      this._search$.pipe(
+        tap(() => this._loading$.next(true)),
+        debounceTime(200),
+        switchMap(() => this._search()),
+        delay(200),
+        tap(() => this._loading$.next(false))
+      ).subscribe(result => {
+        this._roles$.next(result.roles);
+        this._total$.next(result.total);
+      });
+  
+      this._search$.next();
+  }
 
 
 

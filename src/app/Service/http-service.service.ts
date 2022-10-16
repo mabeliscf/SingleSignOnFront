@@ -14,7 +14,6 @@ import { RegisterUserDTO } from '../Models/request/RegisterUserDTO';
 import { GlobalResponse } from '../Models/response/GlobalResponse';
 import { UsersInfo } from '../Models/response/UsersInfo';
 import { TenantInfo } from '../Models/response/TenantInfo';
-import { updateUserDTO } from '../Models/request/UpdateUserDTO';
 import { AuthService } from './auth.service';
 import { OktaUserinfo } from '../Models/response/OktaUserinfo';
 
@@ -52,8 +51,8 @@ getDBbyID (id:Number){
   const sendurl = `${this.url + "Database/getDB?id="}${id}`;
   return this.http.get<Database>(sendurl);
 }
-createDB(database :  DatabaseDTO) : Observable<boolean>{
-  return this.http.post<boolean>(this.url + "Database/createDB", database)
+createDB(database :  DatabaseDTO) : Observable<number>{
+  return this.http.post<number>(this.url + "Database/createDB", database)
     .pipe();
 }
 updateDB(database :  DatabaseDTO) : Observable<boolean>{
@@ -73,8 +72,8 @@ getRolebyID (id:Number){
   const sendurl = `${this.url + "Roles/getRole?id="}${id}`;
   return this.http.get<Roles>(sendurl);
 }
-createRole(role :  RoleDTO) : Observable<boolean>{
-  return this.http.post<boolean>(this.url + "Roles/createRole", role)
+createRole(role :  RoleDTO) : Observable<number>{
+  return this.http.post<number>(this.url + "Roles/createRole", role)
     .pipe();
 }
 updateRole(role :  RoleDTO) : Observable<boolean>{
@@ -87,8 +86,8 @@ deleteRole(role :  RoleDTO) : Observable<boolean>{
 }
 
 //------------------------------------USER-----------------
-registerUser(register :  RegisterDTO) : Observable<Tenant>{
-  return this.http.post<Tenant>(this.url + "User/register", register)
+registerUser(register :  RegisterDTO) : Observable<GlobalResponse>{
+  return this.http.post<GlobalResponse>(this.url + "User/register", register)
     .pipe();
 }
 
@@ -107,12 +106,6 @@ getUsersbyTenant(userID :  Number) {
 
 getAllTenants() {
   return this.http.get<TenantInfo[]>(this.url + "User/Tenants");
-}
-
-//update user login 
-updateUser(update :  updateUserDTO) : Observable<GlobalResponse>{
-  return this.http.post<GlobalResponse>(this.url + "User/UpdateUsers", update)
-    .pipe();
 }
 
 isAdminCreated(){
